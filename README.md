@@ -23,7 +23,8 @@ Oliver's resources gathered on this API. Only successful run was with a PC with 
 1. Login into Stock Room Bloomberg Terminal with RIT student credentials
 2. Open Git Bash, run this code: `python -m pip install ‑‑index-url=https://blpapi.bloomberg.com/repository/releases/python/simple blpapi`
 3. Create a Python file. Don't forget to `import blpapi`
-4. (⭐) Choose desired data collection service. 
+4. (⭐) Choose desired data collection service.
+5. Still working on it...
 
 ## test.py
 Requests historical stock data for Apple (AAPL US Equity) within a specified date range, and prints the date and closing price (PX_LAST) for each day in the response.
