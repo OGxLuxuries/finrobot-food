@@ -15,3 +15,5 @@ Oliver's resources gathered on this API. Only successful run was with a PC with 
 - https://bloomberg.github.io/blpapi-docs/python/3.24.11/index.html
 
 - https://data.bloomberglp.com/professional/sites/10/2017/03/BLPAPI-Core-Developer-Guide.pdf
+
+- https://developer.bloomberg.com/portal/products?interfaces=bloomberg_api_blpapi
