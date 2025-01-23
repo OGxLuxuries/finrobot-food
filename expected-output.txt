@@ -1,0 +1,25 @@
+Starting the script...
+Starting Bloomberg session...
+Session started successfully.
+Successfully opened reference data service.
+Preparing request for historical data...
+Sending request for AAPL US Equity historical data...
+No security data in the message.
+No security data in the message.
+No security data in the message.
+Security: AAPL US Equity
+  Date: 2023-01-03, PX_LAST: 125.07
+  Date: 2023-01-04, PX_LAST: 126.36
+  Date: 2023-01-05, PX_LAST: 125.02
+  Date: 2023-01-06, PX_LAST: 129.62
+  Date: 2023-01-09, PX_LAST: 130.15
+  Date: 2023-01-10, PX_LAST: 130.73
+  Date: 2023-01-11, PX_LAST: 133.49
+  Date: 2023-01-12, PX_LAST: 133.41
+  Date: 2023-01-13, PX_LAST: 134.76
+  Date: 2023-01-17, PX_LAST: 135.94
+  Date: 2023-01-18, PX_LAST: 135.21
+  Date: 2023-01-19, PX_LAST: 135.27
+  Date: 2023-01-20, PX_LAST: 137.87
+Received full response.
+Data retrieval complete.
