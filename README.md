@@ -1,99 +1,103 @@
-# BLPAPI Research for Automated Stock Trading Project
-Bloomberg API for Python 
+# StockTwits Watcher Counter
 
-Resources gathered on this API. Only successful run was with a PC with Bloomberg Terminal Software. Currently looking into Bloomberg anywhere capabilities.
+This script scrapes the number of watchers for specified stocks from StockTwits.com and exports the data in multiple formats.
 
-## Important Links
-- [Bloomberg Data License API Code Samples](https://developer.bloomberg.com/portal/downloads?releaseStatus=current#data_license_rest_api_code_samples)
-- [All BLPAPI Data Capabilities/Extraction](https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5447&entityType=document#api_services-service_table) ⭐
-- [BLPAPI Data Capabilities](https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5400&entityType=document)
-- [API Tutorials](https://developer.bloomberg.com/portal/tutorials)
-- [BLPAPI Python Docs](https://bloomberg.github.io/blpapi-docs/python/3.24.11/index.html)
-- [BLPAPI Developer Guide PDF](https://data.bloomberglp.com/professional/sites/10/2017/03/BLPAPI-Core-Developer-Guide.pdf)
-- [Developer Portal](https://developer.bloomberg.com/portal/products?interfaces=bloomberg_api_blpapi)
-- [Curated Bloomberg Twitter Feed](https://developer.bloomberg.com/portal/products/edf?chapterId=767&entityType=document)
+## Prerequisites
 
+- Python 3.x
+- Google Chrome browser
+- Internet connection
 
-## Demo | Twitter Feed and XML to JSON Converter
+## Installation
 
-### Overview
-This project consists of two scripts that work together to collect and process Bloomberg Twitter feed sentiment data for AAPL.
+1. Clone this repository or download the files
+2. Install the required Python packages:
+```sh
 
-### Prerequisites:
-- Bloomberg Terminal
-- Python 3.x.x
-- pip
+pip install -r requirements.txt
+```
 
 ## Dependencies
-Ensure you have the required dependencies installed before running the scripts:
+
+The following Python packages are required:
+- selenium (>=4.15.2): For web automation
+- beautifulsoup4 (>=4.12.2): For HTML parsing
+- pandas (>=2.1.3): For data manipulation and export
+- openpyxl (>=3.1.2): For Excel file export
+- webdriver-manager (>=4.0.1): For Chrome driver management
+- requests (>=2.31.0): For HTTP requests
+
+## Project Structure
+
+
+## Usage
+
+Run the script using Python:
+
 ```sh
-python -m pip install --index-url=https://blpapi.bloomberg.com/repository/releases/python/simple blpapi
-pip install blpapi xmltodict
+
+python stocktwits.py
 ```
+## Features
 
-### Step 1: Run the Bloomberg Twitter Subscription Script
-In the first terminal, execute the following command to start collecting Bloomberg Twitter feed data:
-```sh
-python bloomberg_twitter_feed.py
-```
-## Expected Output
-Without authentication, we won't receive any Twitter feed data at all - the subscription will fail with the PERMISSION_ERROR we saw.
-With proper authentication, we'll receive Twitter feed data in this structure:
-```
-{
-  "security": "twitter_feed",
-  "timestamp": "20240204_234823",
-  "type": "social",
-  "data": {
-    "tweet": {
-      "body": "The actual tweet text content",
-      "url": "https://twitter.com/username/status/123456789",
-      "language": "EN"
-    },
-    "user": {
-      "handle": "@username",
-      "followers": 50000,
-      "lists": 100,
-      "tweets": 5000
-    },
-    "metadata": {
-      "assigned_topics": ["TECH", "MARKETS"],
-      "derived_topics": ["EARNINGS", "PRODUCTS"],
-      "assigned_tickers": ["AAPL US Equity"],
-      "derived_tickers": ["MSFT US Equity"]
-    }
-  }
-}
+- Scrapes watcher counts for 38 predefined stocks
+- Handles rate limiting with automatic retries
+- Exports data in multiple formats (CSV, Excel, JSON)
+- Comprehensive logging system
+- Progress tracking in console
+- Automatic file organization with timestamps
 
-```
-### Step 2: Run the Bloomberg SPY, DJI, and Something Else Subscription Script
-In the second  terminal, execute the following command to start collecting Bloomberg Twitter feed data:
-```sh
-python bloomberg_index_feed.py
-```
+## Output Files
 
-### Step 3: Run the Bloomberg General Market News Subscription Script
-In the third terminal, execute the following command to start collecting Bloomberg Twitter feed data:
-```sh
-python bloomberg_market_feed.py
-```
+The script creates a `stock_data` directory containing:
+1. CSV file: `stocktwits_watchers_[timestamp].csv`
+2. Excel file: `stocktwits_watchers_[timestamp].xlsx`
+3. JSON file: `stocktwits_watchers_[timestamp].json`
 
+Additionally, a `stocktwits_scraper.log` file is created in the root directory for logging.
 
-## Functionality
-- Subscribes to Bloomberg Twitter feed and sentiment data for AAPL.
-- Saves incoming data as XML files.
-- Automatically converts new XML files to JSON format.
-- Stores JSON files in a `json_output` directory.
+## Tracked Stocks
 
-## Key Features
-- Real-time data processing
-- Automatic file conversion
-- Error handling
-- Clean shutdown on `Ctrl+C`
-- Separation of concerns between data collection and conversion
+The script tracks the following stocks:
+- MSFT, AAPL, CRM, CRWD, GOOGL
+- CYBR, NVDA, LMT, SHLD, WWD
+- LYB, HON, HTHIY, WM, V
+- FISI, JPM, MA, AXP, EW
+- XLV, NVO, WMT, COKE, DIS
+- AMZN, GM, DAL, TSLA, DFH
+- DLR, STAG, AMT, NTSX, CPK
+- GEV, NETZ, GLD
 
+## Error Handling
 
+- Implements retry mechanism with exponential backoff
+- Maximum 3 retry attempts per stock
+- Logs all errors to `stocktwits_scraper.log`
+- Continues processing remaining stocks if one fails
 
-## Important Notes
-- Proper Bloomberg credentials and permissions are required to access the Twitter feed and sentiment data services.
+## Logging
 
+The script logs:
+- Processing status for each stock
+- Number of watchers found
+- Any errors or retry attempts
+- Export status for each file format
+
+## Notes
+
+- The script uses Chrome in headless mode
+- Timestamps are in local time zone
+- Data is sorted by watcher count in descending order in the final display
+
+## Troubleshooting
+
+If you encounter issues:
+1. Check `stocktwits_scraper.log` for error details
+2. Ensure Chrome is installed and updated
+3. Verify internet connection
+4. Check if StockTwits.com is accessible
+5. Ensure all dependencies are installed correctly
+
+## License
+
+This project is open source and available under the MIT License.
