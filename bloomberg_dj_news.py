@@ -6,7 +6,6 @@ import os
 class BloombergDowJonesNews:
     def __init__(self):
         self.session = None
-        self.DOW_JONES_EID = "81347"  # Dow Jones News Feed EID
         self.output_dir = os.path.join(os.path.dirname(__file__), "dowjones_output")
         
         if not os.path.exists(self.output_dir):
@@ -24,22 +23,38 @@ class BloombergDowJonesNews:
             print("Failed to start session.")
             return False
             
-        if not self.session.openService("//blp/mktnews-dowjonesnews"):
-            print("Failed to open Dow Jones news service.")
+        if not self.session.openService("//blp/mktdata"):
+            print("Failed to open market data service.")
             return False
             
         return True
 
     def subscribe(self):
-        """Create and send subscription for Dow Jones news"""
+        """Create and send subscription for Dow Jones news via market data"""
         subscriptions = blpapi.SubscriptionList()
         
-        # Subscribe to Dow Jones News Feed with XML format
-        topic = f"//blp/mktnews-dowjonesnews/eid/{self.DOW_JONES_EID}?format=xml"
-        correlationId = blpapi.CorrelationId("DowJones-News")
+        # Subscribe to major indices to get their news
+        securities = [
+            "DJI Index",  # Dow Jones Industrial Average
+            "INDU Index", # Bloomberg Dow Jones Industrial Index
+            "SPX Index"   # S&P 500 for broader market news
+        ]
         
-        subscriptions.add(topic=topic,
-                         correlationId=correlationId)
+        fields = [
+            "LAST_PRICE",
+            "NEWS_HEADLINES",
+            "NEWS_STORY",
+            "RT_NEWS_STORY",  # Real-time news
+            "RT_NEWS_HEADLINE_ONLY"  # Real-time headlines
+        ]
+        
+        for security in securities:
+            correlationId = blpapi.CorrelationId(security)
+            subscriptions.add(
+                topic=security,
+                fields=fields,
+                correlationId=correlationId
+            )
 
         self.session.subscribe(subscriptions)
 
@@ -58,45 +73,54 @@ class BloombergDowJonesNews:
     def _handleDataEvent(self, event):
         """Handle news updates"""
         for msg in event:
-            self._processNewsMessage(msg)
+            security = msg.correlationId().value()
+            if (msg.hasElement("NEWS_HEADLINES") or 
+                msg.hasElement("NEWS_STORY") or 
+                msg.hasElement("RT_NEWS_STORY") or 
+                msg.hasElement("RT_NEWS_HEADLINE_ONLY")):
+                self._processNewsMessage(msg, security)
+            else:
+                self._processMarketDataMessage(msg, security)
 
-    def _processNewsMessage(self, msg):
-        """Process and save Dow Jones news message"""
-        try:
+    def _processNewsMessage(self, msg, security):
+        """Process and save news message"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save to XML file
+        filename = os.path.join(self.output_dir, f"dj_news_{security}_{timestamp}.xml")
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(msg.toString())
+        
+        # Print formatted news
+        print(f"\n=== News Update for {security} ===")
+        print(f"Time: {timestamp}")
+        
+        if msg.hasElement("NEWS_HEADLINES"):
+            headlines = msg.getElement("NEWS_HEADLINES")
+            print(f"Headline: {headlines.getValueAsString()}")
+            
+        if msg.hasElement("NEWS_STORY"):
+            story = msg.getElement("NEWS_STORY")
+            print(f"Story: {story.getValueAsString()}")
+            
+        if msg.hasElement("RT_NEWS_STORY"):
+            rt_story = msg.getElement("RT_NEWS_STORY")
+            print(f"Real-time Story: {rt_story.getValueAsString()}")
+            
+        if msg.hasElement("RT_NEWS_HEADLINE_ONLY"):
+            rt_headline = msg.getElement("RT_NEWS_HEADLINE_ONLY")
+            print(f"Real-time Headline: {rt_headline.getValueAsString()}")
+            
+        print("========================")
+
+    def _processMarketDataMessage(self, msg, security):
+        """Process and save market data message"""
+        if msg.hasElement("LAST_PRICE"):
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            # Extract key fields based on documentation
-            story = msg.getElement("ContentT").getElement("StoryContent")
-            
-            # Get metadata
-            metadata = story.getElement("Story").getElement("Metadata")
-            headline = metadata.getElementAsString("Headline") if metadata.hasElement("Headline") else "N/A"
-            wire_name = metadata.getElementAsString("WireName") if metadata.hasElement("WireName") else "N/A"
-            time_of_arrival = metadata.getElementAsString("TimeOfArrival") if metadata.hasElement("TimeOfArrival") else "N/A"
-            
-            # Get story content
-            story_content = story.getElement("Story")
-            body = story_content.getElementAsString("Body") if story_content.hasElement("Body") else "N/A"
-            hot_level = story_content.getElementAsString("HotLevel") if story_content.hasElement("HotLevel") else "0"
-            language = story_content.getElementAsString("LanguageString") if story_content.hasElement("LanguageString") else "N/A"
-            
-            # Print formatted news
-            print("\n=== Dow Jones News Update ===")
-            print(f"Time: {time_of_arrival}")
-            print(f"Source: {wire_name}")
-            print(f"Language: {language}")
-            print(f"Hot Level: {hot_level}")
-            print(f"Headline: {headline}")
-            print("Body Preview:", body[:200] + "..." if len(body) > 200 else body)
-            print("========================\n")
-            
-            # Save full message to XML file
-            filename = os.path.join(self.output_dir, f"dj_news_{timestamp}.xml")
-            with open(filename, "w", encoding="utf-8") as f:
-                f.write(msg.toString())
-                
-        except Exception as e:
-            print(f"Error processing news message: {e}")
+            print(f"\n=== Market Data for {security} ===")
+            print(f"Time: {timestamp}")
+            print(f"Last Price: {msg.getElementAsFloat('LAST_PRICE')}")
+            print("========================")
 
     def _handleStatusEvent(self, event):
         """Handle subscription status"""
@@ -123,8 +147,8 @@ def main():
     feed.subscribe()
     
     try:
-        print("\nSubscribed to Dow Jones News Feed. Press Ctrl+C to exit.")
-        print("Monitoring for news updates...\n")
+        print("\nSubscribed to Dow Jones and market news. Press Ctrl+C to exit.")
+        print("Monitoring DJI, INDU, and SPX indices for news and price updates...\n")
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
