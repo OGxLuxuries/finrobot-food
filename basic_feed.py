@@ -29,15 +29,10 @@ class BloombergBasicFeed:
             print("Failed to open market data service.")
             return False
             
-        # Open news service with correct service name
-        if not self.session.openService("//blp/newssvc"):
-            print("Failed to open news service.")
-            return False
-            
         return True
 
     def subscribe(self):
-        """Create and send subscription for market data and news"""
+        """Create and send subscription for market data and headlines"""
         subscriptions = blpapi.SubscriptionList()
         
         # Subscribe to AAPL market data
@@ -45,20 +40,11 @@ class BloombergBasicFeed:
         subscriptions.add(
             topic="AAPL US Equity",
             correlationId=market_correlationId,
-            fields=["LAST_PRICE", "BID", "ASK", "VOLUME"],
+            fields=["LAST_PRICE", "BID", "ASK", "VOLUME", "NEWS_HEADLINES"],  # Add NEWS_HEADLINES field
             options=None
         )
 
-        # Subscribe to AAPL news with correct topic format
-        news_correlationId = blpapi.CorrelationId("AAPL_NEWS")
-        subscriptions.add(
-            topic="NEWS_STORY_FILTER//AAPL US Equity",  # Updated news topic format
-            correlationId=news_correlationId,
-            fields=["STORY_TEXT", "HEADLINE", "TIME_STAMP"],  # Updated field names
-            options=None
-        )
-
-        print("Subscribing to AAPL market data and news...")
+        print("Subscribing to AAPL market data...")
         self.session.subscribe(subscriptions)
 
     def processEvent(self, event, session):
@@ -159,7 +145,7 @@ def main():
     feed.subscribe()
     
     try:
-        print("\nSubscribed to AAPL market data and news. Press Ctrl+C to exit.")
+        print("\nSubscribed to AAPL market data. Press Ctrl+C to exit.")
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
