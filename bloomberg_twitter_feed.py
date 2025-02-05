@@ -42,6 +42,7 @@ class BloombergTwitterFeed:
             correlationId=correlationId
         )
 
+        print("Subscribing to Twitter feed...")
         self.session.subscribe(subscriptions)
 
     def processEvent(self, event, session):
