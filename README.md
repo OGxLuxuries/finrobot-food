@@ -8,7 +8,7 @@ Resources gathered on this API. Only successful run was with a PC with Bloomberg
 - [All BLPAPI Data Capabilities/Extraction](https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5447&entityType=document#api_services-service_table) ⭐
 - [BLPAPI Data Capabilities](https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5400&entityType=document)
 - [API Tutorials](https://developer.bloomberg.com/portal/tutorials)
-- [BLPAPI Docs](https://bloomberg.github.io/blpapi-docs/python/3.24.11/index.html)
+- [BLPAPI Python Docs](https://bloomberg.github.io/blpapi-docs/python/3.24.11/index.html)
 - [BLPAPI Developer Guide PDF](https://data.bloomberglp.com/professional/sites/10/2017/03/BLPAPI-Core-Developer-Guide.pdf)
 - [Developer Portal](https://developer.bloomberg.com/portal/products?interfaces=bloomberg_api_blpapi)
 - [Curated Bloomberg Twitter Feed](https://developer.bloomberg.com/portal/products/edf?chapterId=767&entityType=document)
