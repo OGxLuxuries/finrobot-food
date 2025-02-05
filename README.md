@@ -6,19 +6,19 @@ Resources gathered on this API. Only successful run was with a PC with Bloomberg
 ## Important Links
 - https://developer.bloomberg.com/portal/downloads?releaseStatus=current#data_license_rest_api_code_samples
 
-- https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5447&entityType=document#api_services-service_table (⭐)
+- [https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5447&entityType=document#api_services-service_table] All BLPAPI Data Capablities/Extraction (⭐)
 
 - https://developer.bloomberg.com/portal/apis/blpapi?chapterId=5400&entityType=document
 
-- https://developer.bloomberg.com/portal/tutorials
+- [https://developer.bloomberg.com/portal/tutorials](All API Tutorials like subfolder above)
 
-- https://bloomberg.github.io/blpapi-docs/python/3.24.11/index.html
+- [https://bloomberg.github.io/blpapi-docs/python/3.24.11/index.html](BLPAPI Docs)
 
-- https://data.bloomberglp.com/professional/sites/10/2017/03/BLPAPI-Core-Developer-Guide.pdf
+- [https://data.bloomberglp.com/professional/sites/10/2017/03/BLPAPI-Core-Developer-Guide.pdf](BLPAPI Developer Guide PDF)
 
-- https://developer.bloomberg.com/portal/products?interfaces=bloomberg_api_blpapi
+- [https://developer.bloomberg.com/portal/products?interfaces=bloomberg_api_blpapi](Developer Portal)
 
-- (https://developer.bloomberg.com/portal/products/edf?chapterId=767&entityType=document)[curated twitter feed]
+- [https://developer.bloomberg.com/portal/products/edf?chapterId=767&entityType=document](Curated Bloomberg Twitter feed)
 
 ## Demo | Twitter Feed and XML to JSON Converter
 
