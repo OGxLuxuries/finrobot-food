@@ -6,7 +6,7 @@ import os
 class BloombergDowJonesNews:
     def __init__(self):
         self.session = None
-        self.output_dir = os.path.join(os.path.dirname(__file__), "dowjones_output")
+        self.output_dir = os.path.join(os.path.dirname(__file__), "index_news_output")
         
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
