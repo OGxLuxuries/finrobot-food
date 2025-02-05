@@ -25,39 +25,22 @@ class BloombergTwitterFeed:
             print("Failed to start session.")
             return False
             
-        if not self.session.openService("//blp/mktdata"):
-            print("Failed to open market data service.")
+        if not self.session.openService("//blp/mktnews-content"):
+            print("Failed to open market news content service.")
             return False
             
         return True
 
     def subscribe(self):
-        """Create and send subscription for social media and sentiment data"""
+        """Create and send subscription for Twitter feed data"""
         subscriptions = blpapi.SubscriptionList()
         
-        # Market data subscription for tech companies
-        securities = [
-            "AAPL US Equity",
-            "MSFT US Equity",
-            "GOOGL US Equity"
-        ]
-        
-        fields = [
-            "LAST_PRICE",
-            "SOCIAL_MEDIA_ANALYTICS",  # Social media sentiment
-            "SOCIAL_VELOCITY",         # Tweet volume/velocity
-            "NEWS_SENTIMENT",          # News sentiment score
-            "NEWS_HEADLINES",          # Related news
-            "NEWS_STORY"              # Full news stories
-        ]
-        
-        for security in securities:
-            correlationId = blpapi.CorrelationId(security)
-            subscriptions.add(
-                topic=security,
-                fields=fields,
-                correlationId=correlationId
-            )
+        # Subscribe to Twitter feed with EID 70028
+        correlationId = blpapi.CorrelationId("twitter_feed")
+        subscriptions.add(
+            topic="news/eid/70028?format=json",
+            correlationId=correlationId
+        )
 
         self.session.subscribe(subscriptions)
 
@@ -80,51 +63,37 @@ class BloombergTwitterFeed:
             self._processSocialMessage(msg, security)
 
     def _processSocialMessage(self, msg, security):
-        """Process and save social media and sentiment data"""
+        """Process and save social media data"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         social_data = {
             "security": security,
             "timestamp": timestamp,
             "type": "social",
-            "data": {}
+            "data": {
+                "tweet": {
+                    "body": msg.getElement("StoryContent").getElement("Story").getElement("Body").getValueAsString() if msg.hasElement("StoryContent") else "",
+                    "url": msg.getElement("StoryContent").getElement("Story").getElement("WebURL").getValueAsString() if msg.hasElement("StoryContent") else "",
+                    "language": msg.getElement("StoryContent").getElement("Story").getElement("LanguageString").getValueAsString() if msg.hasElement("StoryContent") else "",
+                },
+                "user": {
+                    "handle": msg.getElement("StoryContent").getElement("Story").getElement("SocialMediaInfo").getElement("TwitterGNIPMeta").getElement("UserInfo").getElement("Handle").getValueAsString() if msg.hasElement("StoryContent") else "",
+                    "followers": msg.getElement("StoryContent").getElement("Story").getElement("SocialMediaInfo").getElement("TwitterGNIPMeta").getElement("UserInfo").getElement("Followers").getValueAsInteger() if msg.hasElement("StoryContent") else 0,
+                    "lists": msg.getElement("StoryContent").getElement("Story").getElement("SocialMediaInfo").getElement("TwitterGNIPMeta").getElement("UserInfo").getElement("TwitterLists").getValueAsInteger() if msg.hasElement("StoryContent") else 0,
+                    "tweets": msg.getElement("StoryContent").getElement("Story").getElement("SocialMediaInfo").getElement("TwitterGNIPMeta").getElement("UserInfo").getElement("Tweets").getValueAsInteger() if msg.hasElement("StoryContent") else 0
+                },
+                "metadata": {
+                    "assigned_topics": self._getAssignedTopics(msg),
+                    "derived_topics": self._getDerivedTopics(msg),
+                    "assigned_tickers": self._getAssignedTickers(msg),
+                    "derived_tickers": self._getDerivedTickers(msg)
+                }
+            }
         }
         
-        # Add data fields only if they exist
-        if msg.hasElement("LAST_PRICE"):
-            social_data["data"]["last_price"] = msg.getElementAsFloat("LAST_PRICE")
-            print(f"\n=== Social Media Update for {security} ===")
-            print(f"Time: {timestamp}")
-            print(f"Price: {social_data['data']['last_price']}")
-        
-        if msg.hasElement("SOCIAL_MEDIA_ANALYTICS"):
-            social_data["data"]["social_sentiment"] = msg.getElement("SOCIAL_MEDIA_ANALYTICS").getValueAsString()
-            print("Social Media Sentiment:", social_data["data"]["social_sentiment"])
-            
-        if msg.hasElement("SOCIAL_VELOCITY"):
-            social_data["data"]["tweet_volume"] = msg.getElement("SOCIAL_VELOCITY").getValueAsString()
-            print("Tweet Volume/Velocity:", social_data["data"]["tweet_volume"])
-            
-        if msg.hasElement("NEWS_SENTIMENT"):
-            social_data["data"]["news_sentiment"] = msg.getElement("NEWS_SENTIMENT").getValueAsString()
-            print("News Sentiment Score:", social_data["data"]["news_sentiment"])
-            
-        if msg.hasElement("NEWS_HEADLINES"):
-            social_data["data"]["headlines"] = msg.getElement("NEWS_HEADLINES").getValueAsString()
-            print("Related Headlines:", social_data["data"]["headlines"])
-            
-        if msg.hasElement("NEWS_STORY"):
-            story = msg.getElement("NEWS_STORY").getValueAsString()
-            social_data["data"]["story"] = story
-            story_preview = story[:200] + "..." if len(story) > 200 else story
-            print("News Story Preview:", story_preview)
-        
-        filename = os.path.join(self.output_dir, f"social_{security}_{timestamp}.json")
+        filename = os.path.join(self.output_dir, f"social_{timestamp}.json")
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(social_data, f, indent=2, ensure_ascii=False)
-        
-        if msg.hasElement("LAST_PRICE") or msg.hasElement("SOCIAL_MEDIA_ANALYTICS"):
-            print("========================")
 
     def _handleStatusEvent(self, event):
         """Handle subscription status"""
