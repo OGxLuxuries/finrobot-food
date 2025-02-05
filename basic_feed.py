@@ -24,7 +24,6 @@ class BloombergBasicFeed:
             print("Failed to start session.")
             return False
             
-        # Open market data service
         if not self.session.openService("//blp/mktdata"):
             print("Failed to open market data service.")
             return False
@@ -32,15 +31,15 @@ class BloombergBasicFeed:
         return True
 
     def subscribe(self):
-        """Create and send subscription for market data and headlines"""
+        """Create and send subscription for market data"""
         subscriptions = blpapi.SubscriptionList()
         
-        # Subscribe to AAPL market data
-        market_correlationId = blpapi.CorrelationId("AAPL_MKT")
+        # Subscribe to AAPL market data with proper correlation ID
+        correlationId = blpapi.CorrelationId("AAPL")
         subscriptions.add(
             topic="AAPL US Equity",
-            correlationId=market_correlationId,
-            fields=["LAST_PRICE", "BID", "ASK", "VOLUME", "NEWS_HEADLINES"],  # Add NEWS_HEADLINES field
+            correlationId=correlationId,
+            fields=["LAST_PRICE", "BID", "ASK", "VOLUME"],
             options=None
         )
 
@@ -55,82 +54,55 @@ class BloombergBasicFeed:
                 self._handleStatusEvent(event)
             else:
                 self._handleOtherEvent(event)
-        except Exception as e:
+        except blpapi.Exception as e:
             print(f"Error processing event: {e}")
-        return True
+        return False
 
     def _handleDataEvent(self, event):
-        """Handle market data and news updates"""
+        """Handle subscription data"""
         for msg in event:
             try:
-                if msg.hasElement("NEWS_HEADLINES"):
-                    self._handleNewsData(msg)
-                self._handleMarketData(msg)
-            except Exception as e:
-                print(f"Error processing event: {e}")
-
-    def _handleMarketData(self, msg):
-        """Handle market data updates"""
-        try:
-            market_data = {
-                "security": "AAPL",
-                "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
-                "type": "market_data",
-                "data": {}
-            }
-            
-            for field in ["LAST_PRICE", "BID", "ASK", "VOLUME"]:
-                if msg.hasElement(field):
-                    element = msg.getElement(field)
-                    if field == "VOLUME":
-                        market_data["data"][field.lower()] = element.getValueAsInteger()
-                    else:
-                        market_data["data"][field.lower()] = element.getValueAsFloat()
-            
-            filename = os.path.join(self.output_dir, f"market_data_AAPL_{market_data['timestamp']}.json")
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(market_data, f, indent=2, ensure_ascii=False)
-            
-            if market_data["data"]:  # Only print if we have data
-                print(f"\nMarket Data Update for AAPL:")
-                print(f"Time: {market_data['timestamp']}")
-                for key, value in market_data["data"].items():
-                    print(f"{key.replace('_', ' ').title()}: {value}")
-                print("========================")
-        except blpapi.Exception as e:
-            print(f"Error processing market data: {e}")
-
-    def _handleNewsData(self, msg):
-        """Handle news updates"""
-        try:
-            if msg.hasElement("NEWS_HEADLINES"):
-                news_data = {
-                    "security": "AAPL",
+                topic = msg.correlationId().value()
+                market_data = {
+                    "security": topic,
                     "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
-                    "type": "news",
-                    "data": {
-                        "headline": msg.getElement("NEWS_HEADLINES").getValueAsString()
-                    }
+                    "type": "market_data",
+                    "data": {}
                 }
                 
-                filename = os.path.join(self.output_dir, f"news_AAPL_{news_data['timestamp']}.json")
-                with open(filename, "w", encoding="utf-8") as f:
-                    json.dump(news_data, f, indent=2, ensure_ascii=False)
+                for field in ["LAST_PRICE", "BID", "ASK", "VOLUME"]:
+                    if msg.hasElement(field):
+                        element = msg.getElement(field)
+                        if field == "VOLUME":
+                            market_data["data"][field.lower()] = element.getValueAsInteger()
+                        else:
+                            market_data["data"][field.lower()] = element.getValueAsFloat()
                 
-                print(f"\nNews Update for AAPL:")
-                print(f"Time: {news_data['timestamp']}")
-                print(f"Headline: {news_data['data']['headline']}")
-                print("========================")
-        except blpapi.Exception as e:
-            print(f"Error processing news: {e}")
+                if market_data["data"]:
+                    filename = os.path.join(self.output_dir, f"market_data_{topic}_{market_data['timestamp']}.json")
+                    with open(filename, "w", encoding="utf-8") as f:
+                        json.dump(market_data, f, indent=2, ensure_ascii=False)
+                    
+                    print(f"\nMarket Data Update for {topic}:")
+                    print(f"Time: {market_data['timestamp']}")
+                    for key, value in market_data["data"].items():
+                        print(f"{key.replace('_', ' ').title()}: {value}")
+                    print("========================")
+            except blpapi.Exception as e:
+                print(f"Error processing market data: {e}")
 
     def _handleStatusEvent(self, event):
         """Handle subscription status"""
         for msg in event:
             if msg.messageType() == blpapi.Names.SUBSCRIPTION_FAILURE:
-                print(f"Subscription failed: {msg}")
+                topic = msg.correlationId().value()
+                print(f"Subscription failed for topic {topic}: {msg}")
             elif msg.messageType() == blpapi.Names.SUBSCRIPTION_TERMINATED:
-                print(f"Subscription terminated: {msg}")
+                topic = msg.correlationId().value()
+                print(f"Subscription terminated for topic {topic}")
+            elif msg.messageType() == blpapi.Names.SUBSCRIPTION_STARTED:
+                topic = msg.correlationId().value()
+                print(f"Subscription started for topic {topic}")
 
     def _handleOtherEvent(self, event):
         """Handle other events"""
@@ -138,25 +110,31 @@ class BloombergBasicFeed:
             if msg.messageType() == blpapi.Names.SESSION_TERMINATED:
                 print("Session terminated")
                 return False
+            elif msg.messageType() == blpapi.Names.SLOW_CONSUMER_WARNING:
+                print("Warning: Slow consumer")
+            elif msg.messageType() == blpapi.Names.DATA_LOSS:
+                topic = msg.correlationId().value()
+                print(f"Warning: Data loss for topic {topic}")
         return True
 
 def main():
     feed = BloombergBasicFeed()
     
-    if not feed.start():
-        return
-    
-    feed.subscribe()
-    
     try:
+        if not feed.start():
+            return
+        
+        feed.subscribe()
+        
         print("\nSubscribed to AAPL market data. Press Ctrl+C to exit.")
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("\nCtrl+C pressed. Stopping...")
     finally:
-        feed.session.stop()
-        feed.session.destroy()
+        if feed.session:
+            feed.session.stop()
+            feed.session.destroy()
 
 if __name__ == "__main__":
     main() 
