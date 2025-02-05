@@ -36,7 +36,36 @@ In the first terminal, execute the following command to start collecting Bloombe
 ```sh
 python bloomberg_twitter_feed.py
 ```
+## Expected Output
+Without authentication, we won't receive any Twitter feed data at all - the subscription will fail with the PERMISSION_ERROR we saw.
+With proper authentication, we'll receive Twitter feed data in this structure:
+```
+{
+  "security": "twitter_feed",
+  "timestamp": "20240204_234823",
+  "type": "social",
+  "data": {
+    "tweet": {
+      "body": "The actual tweet text content",
+      "url": "https://twitter.com/username/status/123456789",
+      "language": "EN"
+    },
+    "user": {
+      "handle": "@username",
+      "followers": 50000,
+      "lists": 100,
+      "tweets": 5000
+    },
+    "metadata": {
+      "assigned_topics": ["TECH", "MARKETS"],
+      "derived_topics": ["EARNINGS", "PRODUCTS"],
+      "assigned_tickers": ["AAPL US Equity"],
+      "derived_tickers": ["MSFT US Equity"]
+    }
+  }
+}
 
+```
 ### Step 2: Run the Bloomberg SPY, DJI, and Something Else Subscription Script
 In the second  terminal, execute the following command to start collecting Bloomberg Twitter feed data:
 ```sh
