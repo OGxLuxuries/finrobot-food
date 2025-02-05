@@ -31,17 +31,24 @@ python -m pip install --index-url=https://blpapi.bloomberg.com/repository/releas
 pip install blpapi xmltodict
 ```
 
-### Step 1: Run the Bloomberg Subscription Script
+### Step 1: Run the Bloomberg Twitter Subscription Script
 In the first terminal, execute the following command to start collecting Bloomberg Twitter feed data:
 ```sh
 python bloomberg_twitter_feed.py
 ```
 
-### Step 2: Run the XML to JSON Converter
-In another terminal, run the converter script to transform XML data into JSON format:
+### Step 2: Run the Bloomberg SPY, DJI, and Something Else Subscription Script
+In the second  terminal, execute the following command to start collecting Bloomberg Twitter feed data:
 ```sh
-python xml_to_json_converter.py
+python bloomberg_index_feed.py
 ```
+
+### Step 3: Run the Bloomberg General Market News Subscription Script
+In the third terminal, execute the following command to start collecting Bloomberg Twitter feed data:
+```sh
+python bloomberg_market_feed.py
+```
+
 
 ## Functionality
 - Subscribes to Bloomberg Twitter feed and sentiment data for AAPL.
