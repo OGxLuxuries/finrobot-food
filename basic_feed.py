@@ -29,8 +29,8 @@ class BloombergBasicFeed:
             print("Failed to open market data service.")
             return False
             
-        # Open news service
-        if not self.session.openService("//blp/news"):
+        # Open news service with correct service name
+        if not self.session.openService("//blp/newssvc"):
             print("Failed to open news service.")
             return False
             
@@ -49,12 +49,12 @@ class BloombergBasicFeed:
             options=None
         )
 
-        # Subscribe to AAPL news
+        # Subscribe to AAPL news with correct topic format
         news_correlationId = blpapi.CorrelationId("AAPL_NEWS")
         subscriptions.add(
-            topic="NI AAPL US Equity",  # News for AAPL
+            topic="NEWS_STORY_FILTER//AAPL US Equity",  # Updated news topic format
             correlationId=news_correlationId,
-            fields=["HEADLINE", "NEWS_STORY_TEXT", "NEWS_TIME"],
+            fields=["STORY_TEXT", "HEADLINE", "TIME_STAMP"],  # Updated field names
             options=None
         )
 
@@ -120,8 +120,8 @@ class BloombergBasicFeed:
                 "type": "news",
                 "data": {
                     "headline": msg.getElementAsString("HEADLINE"),
-                    "story": msg.getElementAsString("NEWS_STORY_TEXT") if msg.hasElement("NEWS_STORY_TEXT") else "",
-                    "time": msg.getElementAsString("NEWS_TIME") if msg.hasElement("NEWS_TIME") else ""
+                    "story": msg.getElementAsString("STORY_TEXT") if msg.hasElement("STORY_TEXT") else "",
+                    "time": msg.getElementAsString("TIME_STAMP") if msg.hasElement("TIME_STAMP") else ""
                 }
             }
             
