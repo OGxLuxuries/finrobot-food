@@ -2,7 +2,7 @@ import blpapi
 import time
 from datetime import datetime
 import os
-import xml.sax.saxutils as saxutils  # For XML escaping
+import json  # Add this import and remove xml.sax.saxutils
 
 class BloombergTwitterFeed:
     def __init__(self):
@@ -79,76 +79,51 @@ class BloombergTwitterFeed:
             security = msg.correlationId().value()
             self._processSocialMessage(msg, security)
 
-    def _escape_xml(self, text):
-        """Escape special characters for XML"""
-        if not isinstance(text, str):
-            text = str(text)
-        return saxutils.escape(text)
-
     def _processSocialMessage(self, msg, security):
         """Process and save social media and sentiment data"""
-        # Only save if we have sentiment-related data
-        has_sentiment_data = any([
-            msg.hasElement("SOCIAL_MEDIA_ANALYTICS"),
-            msg.hasElement("SOCIAL_VELOCITY"),
-            msg.hasElement("NEWS_SENTIMENT"),
-            msg.hasElement("NEWS_HEADLINES"),
-            msg.hasElement("NEWS_STORY")
-        ])
-        
-        if not has_sentiment_data and not msg.hasElement("LAST_PRICE"):
-            return  # Skip empty updates
-            
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Create a simplified XML structure
-        simplified_data = f"""<?xml version="1.0" encoding="UTF-8"?>
-<SocialData>
-    <Security>{security}</Security>
-    <Timestamp>{timestamp}</Timestamp>"""
+        social_data = {
+            "security": security,
+            "timestamp": timestamp,
+            "type": "social",
+            "data": {}
+        }
         
+        # Add data fields only if they exist
         if msg.hasElement("LAST_PRICE"):
-            price = msg.getElementAsFloat("LAST_PRICE")
-            simplified_data += f"\n    <LastPrice>{price}</LastPrice>"
+            social_data["data"]["last_price"] = msg.getElementAsFloat("LAST_PRICE")
             print(f"\n=== Social Media Update for {security} ===")
             print(f"Time: {timestamp}")
-            print(f"Price: {price}")
+            print(f"Price: {social_data['data']['last_price']}")
         
         if msg.hasElement("SOCIAL_MEDIA_ANALYTICS"):
-            analytics = msg.getElement("SOCIAL_MEDIA_ANALYTICS").getValueAsString()
-            simplified_data += f"\n    <SocialMediaSentiment>{analytics}</SocialMediaSentiment>"
-            print("Social Media Sentiment:", analytics)
+            social_data["data"]["social_sentiment"] = msg.getElement("SOCIAL_MEDIA_ANALYTICS").getValueAsString()
+            print("Social Media Sentiment:", social_data["data"]["social_sentiment"])
             
         if msg.hasElement("SOCIAL_VELOCITY"):
-            velocity = msg.getElement("SOCIAL_VELOCITY").getValueAsString()
-            simplified_data += f"\n    <TweetVolume>{velocity}</TweetVolume>"
-            print("Tweet Volume/Velocity:", velocity)
+            social_data["data"]["tweet_volume"] = msg.getElement("SOCIAL_VELOCITY").getValueAsString()
+            print("Tweet Volume/Velocity:", social_data["data"]["tweet_volume"])
             
         if msg.hasElement("NEWS_SENTIMENT"):
-            sentiment = msg.getElement("NEWS_SENTIMENT").getValueAsString()
-            simplified_data += f"\n    <NewsSentiment>{sentiment}</NewsSentiment>"
-            print("News Sentiment Score:", sentiment)
+            social_data["data"]["news_sentiment"] = msg.getElement("NEWS_SENTIMENT").getValueAsString()
+            print("News Sentiment Score:", social_data["data"]["news_sentiment"])
             
         if msg.hasElement("NEWS_HEADLINES"):
-            headlines = msg.getElement("NEWS_HEADLINES").getValueAsString()
-            simplified_data += f"\n    <Headlines>{headlines}</Headlines>"
-            print("Related Headlines:", headlines)
+            social_data["data"]["headlines"] = msg.getElement("NEWS_HEADLINES").getValueAsString()
+            print("Related Headlines:", social_data["data"]["headlines"])
             
         if msg.hasElement("NEWS_STORY"):
             story = msg.getElement("NEWS_STORY").getValueAsString()
-            simplified_data += f"\n    <NewsStory>{story}</NewsStory>"
+            social_data["data"]["story"] = story
             story_preview = story[:200] + "..." if len(story) > 200 else story
             print("News Story Preview:", story_preview)
         
-        simplified_data += "\n</SocialData>"
+        filename = os.path.join(self.output_dir, f"social_{security}_{timestamp}.json")
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(social_data, f, indent=2, ensure_ascii=False)
         
-        # Only save if we have sentiment-related data
-        if has_sentiment_data:
-            filename = os.path.join(self.output_dir, f"social_{security}_{timestamp}.xml")
-            with open(filename, "w", encoding="utf-8") as f:
-                f.write(simplified_data)
-        
-        if has_sentiment_data or msg.hasElement("LAST_PRICE"):
+        if msg.hasElement("LAST_PRICE") or msg.hasElement("SOCIAL_MEDIA_ANALYTICS"):
             print("========================")
 
     def _handleStatusEvent(self, event):
