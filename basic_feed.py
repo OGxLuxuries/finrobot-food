@@ -24,8 +24,14 @@ class BloombergBasicFeed:
             print("Failed to start session.")
             return False
             
+        # Open market data service
         if not self.session.openService("//blp/mktdata"):
             print("Failed to open market data service.")
+            return False
+
+        # Open news service
+        if not self.session.openService("//blp/mktbar"):
+            print("Failed to open news service.")
             return False
             
         return True
@@ -56,18 +62,12 @@ class BloombergBasicFeed:
             options=None
         )
 
-        # News subscription
+        # News subscription with correct format
         news_correlationId = blpapi.CorrelationId("AAPL_NEWS")
         subscriptions.add(
-            topic="N:AAPL US Equity",  # News topic format
+            topic="AAPL US Equity",
             correlationId=news_correlationId,
-            fields=[
-                "HEADLINE",
-                "STORY_TEXT",
-                "NEWS_STORY",
-                "PAGE_CONTENT",
-                "TIME"
-            ],
+            fields=["NEWS_HEADLINES"],  # Simplified news field
             options=None
         )
 
