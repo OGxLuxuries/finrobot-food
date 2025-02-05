@@ -1,12 +1,18 @@
 import blpapi
 import time
 from datetime import datetime
+import os
 
 class BloombergTwitterFeed:
     def __init__(self):
         self.session = None
-        self.TWITTER_EID = "70028"  # Twitter Feed EID
-        self.SENTIMENT_EID = "80047"  # Company Sentiment EID
+        self.TWITTER_EID = "70028"
+        self.SENTIMENT_EID = "80047"
+        self.output_dir = os.path.join(os.path.dirname(__file__), "output")
+        
+        # Create output directory if it doesn't exist
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
         
     def start(self):
         sessionOptions = blpapi.SessionOptions()
@@ -14,6 +20,12 @@ class BloombergTwitterFeed:
         sessionOptions.setServerPort(8194)
         sessionOptions.setMaxEventQueueSize(10000)
         
+        # Add authentication options
+        sessionOptions.setAuthenticationOptions("AuthenticationMode=APPLICATION_ONLY;"
+                                              "ApplicationAuthenticationType=APPNAME_AND_KEY;"
+                                              "ApplicationName=YourAppName;"  # Replace with your app name
+                                              "ApplicationVersion=1.0")
+
         self.session = blpapi.Session(sessionOptions, self.processEvent)
         
         if not self.session.start():
@@ -31,17 +43,16 @@ class BloombergTwitterFeed:
         subscriptions = blpapi.SubscriptionList()
         
         # Twitter feed subscription
-        twitter_topic = f"//blp/mktnews-content/news/eid/{self.TWITTER_EID}?format=xml"
+        twitter_topic = f"/news/eid/{self.TWITTER_EID}"  # Simplified topic format
         twitter_correlationId = blpapi.CorrelationId("TwitterFeed-AAPL")
         subscriptions.add(topic=twitter_topic,
                          correlationId=twitter_correlationId)
 
         # Sentiment subscription
-        sentiment_topic = f"//blp/mktnews-content/analytics/eid/{self.SENTIMENT_EID}?format=xml"
+        sentiment_topic = f"/analytics/eid/{self.SENTIMENT_EID}/AAPL US Equity"  # Modified topic format
         sentiment_correlationId = blpapi.CorrelationId("Sentiment-AAPL")
         subscriptions.add(topic=sentiment_topic,
-                         correlationId=sentiment_correlationId,
-                         options=["AAPL US Equity"])
+                         correlationId=sentiment_correlationId)
 
         self.session.subscribe(subscriptions)
 
@@ -68,7 +79,7 @@ class BloombergTwitterFeed:
     def _processTwitterMessage(self, msg):
         """Process and save Twitter message"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"twitter_feed_{timestamp}.xml"
+        filename = os.path.join(self.output_dir, f"twitter_feed_{timestamp}.xml")
         
         with open(filename, "w", encoding="utf-8") as f:
             f.write(msg.toString())
@@ -77,7 +88,7 @@ class BloombergTwitterFeed:
     def _processSentimentMessage(self, msg):
         """Process and save sentiment message"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"sentiment_{timestamp}.xml"
+        filename = os.path.join(self.output_dir, f"sentiment_{timestamp}.xml")
         
         with open(filename, "w", encoding="utf-8") as f:
             f.write(msg.toString())
