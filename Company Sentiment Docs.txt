@@ -1,0 +1,820 @@
+Introduction
+Service Description
+The Company Sentiment Service presents an overview of company sentiment scores that provide insight into positive or negative coverage of companies in the news.
+
+Sentiment answers the question: “If investors holding long positions in a security read this story, would their confidence in their holdings increase, decrease, or remain the same?”
+
+Service Scope
+API Endpoint
+The Company Sentiment Service is available via the Bloomberg API (BLPAPI).
+
+The following API endpoint allows you to access company sentiment data: //blp/mktnews-content/analytics
+
+Required EIDs
+EID
+Product
+News Wires
+80047
+Bloomberg Company Sentiment
+Bloomberg First Word, Bloomberg News (English, Japanese, Simplified Chinese)
+80179
+Miscellaneous Company Sentiment
+Web Scrapes, Business Wire, PR Newswire, GlobeNewswire, Twitter
+Key Benefits
+One Feed Covers All: Access to information from all Bloomberg news sources, including third-party news providers.
+Real-Time Delivery: No delay in information transmission, allowing users and applications to act in real time.
+Multi-Dimensional Information: Multiple indicators lead to more informed decision-making processes.
+Insight into News Consumption Process: Bloomberg analytics provide point-in-time knowledge of how audiences digest news.
+Available Data
+The Company Sentiment Service provides numerical scores generated from news available through Bloomberg:
+
+Sources
+Content
+Bloomberg News
+Bloomberg-originated news products
+Third-Party News
+National and international news publications and wire services
+Web-Scraping
+Web page content, social media, and blogs
+For a detailed list of Company Sentiment sources, see Appendix > Wire Code Mapping.
+
+Bloomberg Terminal Consistency
+The underlying company sentiment data is consistent with these functions on the Bloomberg Terminal®:
+
+News Activity Chart (GN <GO>)
+Social Activity Chart (GT <GO>)
+Subscribing to Data
+ HINT
+
+For detailed guidance on subscribing to real-time data using the Bloomberg API (BLPAPI), see Bloomberg API Guide > Subscriptions.
+
+Subscriptions
+Subscription Strings
+Here is an example of a string used to subscribe to the Company Sentiment Service:
+
+//blp/mktnews-content/analytics/eid/80047?format=xml
+
+Where:
+
+String Element
+Description
+//blp/mktnews-content
+The market news and analytics service name
+/analytics
+The topic name1
+/eid/80047
+The entitlement identifier for Bloomberg Company Sentiment
+?format=xml
+Returned data appears in XML format2
+1 The topic name news is used with other EDF services such as News Headlines and Story Bodies.
+
+2 You can also indicate that returned data appears in json format with ?format=json.
+
+Subscription Topics
+News stories and social media posts generate company sentiment scores. You can subscribe to company sentiment data by analytic type, genre, and language.
+
+Analytic Type
+Language String
+Description
+SENTIMENT
+ENGLISH
+News sentiment in English
+SENTIMENT
+JAPANESE
+News sentiment in Japanese
+SENTIMENT
+CHINESE_SIMP
+News sentiment in Simplified Chinese
+SENTIMENT_SMEDIA
+ENGLISH
+Social Media sentiment in English only
+Company Sentiment Data
+This example shows how to filter for company sentiment in the Japanese language:
+
+/ContentT/StoryAnalytics/StructuredScoreList/StructuredScore/LanguageString = 'JAPANESE'
+
+Social Media Sentiment Data
+This example shows how to filter for social media sentiment (in English):
+
+/ContentT/StoryAnalytics/StructuredScoreList/AnalyticsType = SENTIMENT_SMEDIA
+
+Handling Responses
+ HINT
+
+For detailed guidance on handling Events returned via the Bloomberg API, see Bloomberg API Guide > Event Handling.
+
+Example Response
+The below code example shows the sentiment for InterDigital, Inc. based on the Bloomberg News story “Interdigital Raises 1Q Rev. Guidance, Citing New License Pacts” dated March 26, 2020.
+
+Company Sentiment Code Example
+XML
+
+<?xml version="1.0" encoding="UTF-8" ?>
+   <ContentT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <StoryAnalytics>
+         <Id>
+            <SUID>Q7SW4E6K50XS</SUID>
+         </Id>
+      <Metadata>
+         <WireId>25</WireId>
+         <ClassNum>51</ClassNum>
+         <WireName>BN</WireName>
+         <Headline>*INTERDIGITAL RAISES 1Q REV. GUIDANCE, CITING NEW LICENSE PACTS</Headline>
+         <SourceId>SENTSVC</SourceId>
+         <TimeOfArrival>2020-03-26T12:31:26.717+00:00</TimeOfArrival>
+      </Metadata>
+      <StructuredScoreList>
+         <AnalyticsType>SENTIMENT</AnalyticsType>
+            <StructuredScore>
+               <Score>1</Score>
+               <Confidence>83</Confidence>
+               <EntityId>IDCC</EntityId>
+               <EntityType>COMPANY</EntityType>
+               <BloombergEntityId>BBG00M6PP1V5</BloombergEntityId>
+               <SecurityFigi>BBG000HLJ7M4</SecurityFigi>
+               <LanguageId>1</LanguageId>
+               <LanguageString>ENGLISH</LanguageString>
+            </StructuredScore>
+            <Version>2</Version>
+         <StoryType>ADD_STORY</StoryType>
+      </StructuredScoreList>
+      <DerivedTopics>
+         <ScoredEntity>
+            <Id>MISC</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>HAR</Id>
+           <Score>70</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>ERN</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>WARN</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>EST</Id>
+            <Score>70</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>ANA</Id>
+            <Score>70</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>RLSHEAD</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>BGOVCODES</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>EQUITYKEY</Id>
+         <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>INDUSTRIES</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>BUSINESS</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>SRCRANK1</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>BGOVBILLGO</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>TMT</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>BONDWIRES</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>TEL</Id>
+            <Score>70</Score>
+        </ScoredEntity>
+         <ScoredEntity>
+            <Id>GUIDANCE</Id>
+            <Score>98</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>COS</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+           <Id>TEC</Id>
+            <Score>91</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>HEADS</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>BIZNEWS</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>ANAESTDOWN</Id>
+            <Score>70</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>ACEXCLUDE</Id>
+            <Score>70</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>FINNEWS</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>ANAMOVES</Id>
+            <Score>70</Score>
+         </ScoredEntity>
+        <ScoredEntity>
+            <Id>CPNYCNT1</Id>
+            <Score>100</Score>
+         </ScoredEntity>
+         <ScoredEntity>
+            <Id>ANAESTCHG</Id>
+            <Score>70</Score>
+         </ScoredEntity>
+      </DerivedTopics>
+   </StoryAnalytics>
+</ContentT>
+Sentiment Scores
+News stories and social media (Twitter) posts generate company sentiment scores.
+
+Scores may be positive (+1), negative (-1), or neutral (0) with an associated confidence score ε [0-100]. With access to the individual story sentiment and confidence scores, you can develop a wide range of custom aggregation methods, time horizons, and half-lives.
+
+Fields, Metadata, Topics
+Supported Fields
+These fields appear in Company Sentiment Service responses:
+
+CSV Field Name
+Definition
+Data Type
+Enumeration
+EID
+Entitlement ID
+Integer
+N/A
+CaptureTime
+Capture time of the message (UTC)
+Date/Time
+
+Format=YYYY-MM-DDTHH:MM:SS.000
+N/A
+SUID
+Static identification information of a story that uniquely identifies a story. You can look up on the Bloomberg Terminal using NSN SUID <GO>.
+String
+N/A
+AnalyticsType
+Source of the story. SENTIMENT_SMEDIA represents Twitter only.
+String
+SENTIMENT_SMEDIA=Twitter and other social media
+
+SENTIMENT=other sources
+WireName
+Defines the wire code (content source) of the story.
+String
+See Appendix > Wire Code Mapping
+TimeOfArrival
+Publish time of the story, i.e., the time a story entered the Bloomberg system (UTC).
+Date/Time
+
+Format=YYYY-MM-DDTHH:MM:SS.000″
+N/A
+Headline
+Story headline. Will be empty for some sources (Wire Names, e.g., Twitter). Content is analyzed and sentiment classified as usual but then the headline is removed due to licensing restrictions.
+String
+N/A
+Version
+Sentiment model version. See Models for the latest supported models and versions.
+Integer
+1, 2, 3
+StoryType
+Static value, e.g., ADD_STORY
+String
+N/A
+Score
+Ticker-specific sentiment
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+-1 = negative
+
+0 = neutral
+
+1 = positive
+Confidence
+Confidence in the accuracy of the sentiment score.
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+95 and above = high
+
+70-94 = medium
+
+69 and below = low
+NegativeConfidence
+Confidence in the accuracy of classifying the content as negative. Only available for the latest models described in Models.
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+NeutralConfidence
+Confidence in the accuracy of classifying the content as neutral. Only available for the latest models described in Models.
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+PositiveConfidence
+Confidence in the accuracy of classifying the content as positive. Only available for the latest models described in Models.
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+DerivedTickersId
+Bloomberg identifier of the company associated with the story
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+EntityType
+Static value, e.g., COMPANY.
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+Derived_ID_BB_GLOBAL_COMPANY
+The corresponding ID_BB_GLOBAL_COMPANY number
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+Derived_ID_BB_GLOBAL
+The corresponding security ID_BB_GLOBAL number
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+LanguageString
+Story Language
+String
+ENGLISH, JAPANESE, CHINESE_SIMP
+DerivedTopicsId
+Identified topic(s) present in the story
+String
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+See Topic Mapping
+DerivedTopicsScore
+Measures story’s relevance to a given topic on a scale from 0 to 100
+Integer (0-100)
+
+In CSV format, multiple tickers parsed into a string as semicolon-delimited list.
+N/A
+Backfill
+Timestamp of the most recent historical data backfill. Performed on a best-efforts basis.
+Date/time. Format=YYYY-MM-DDTHH:MM:SS.000.
+N/A
+Metadata
+Classification
+Bloomberg supports two metadata classification methods:
+Assigned: Classification before the story is published. This includes coding by editors, editor workflow tools,  and codes sent by contributors.
+Derived: Bloomberg’s automated classification rules applied to the story after publication. Bloomberg classification rules are maintained by human editors with knowledge in specific verticals and languages. No statistical methods are used for derived-classification logic.
+Taxonomy Files
+Taxonomy files provide descriptive information regarding the metadata. They provide possible tags and tickers for stories and their place within the tree structure. Taxonomy files are available in machine-readable form, and you can download them using your Bloomberg Real-Time Data account.
+News stories are tagged to news tickers, typically of the format X@Y, where X is the company ticker and Y is the exchange code. If an exchange suffix is not specified, it is a US ticker. A ticker ending in Z indicates a private company, which can be verified using the TradeStatus field in either text or XML format:
+news_taxonomy_securities.txt
+news_taxonomy_securities.xml
+Topics
+Topic Codes
+Bloomberg provides unique topic codes that differentiate Bloomberg from its competitors:
+
+Topic
+Description
+HOT
+Captures the most important Bloomberg News headlines from around the globe. Assigned at the discretion of Bloomberg editors, HOT headlines reflect the newsworthiness of the item and its market-moving potential.
+BNSCOOP
+Captures news about Bloomberg News Scoops assigned when Bloomberg breaks a story.
+MNASCOOP
+Captures news about Bloomberg News Scoops assigned when Bloomberg breaks a merger and acquisitions story.
+EXCLUSIVE
+Captures Bloomberg News exclusive stories.
+HEADS
+Captures stories pushed out with headlines based on their importance or urgency.
+Company-Focused Topics
+Code
+Description
+ANA
+Analyst ratings and commentary. For example:
+ANABUY: Analyst rating buys
+ANACHANGE: Analyst rating changes
+ANACUT: Analyst rating downgrades
+ERN
+Earnings
+EST
+Earnings estimates
+DIV
+Dividends
+LAWSUITS
+Legal actions
+TNM
+Shareholdings
+Note: Each of these topic codes has more granular child topic codes that may be relevant depending on your strategy and focus.
+
+Sentiment Analytics
+Methodology
+Bloomberg bases sentiment models on supervised machine-learning methods such as support-vector machines, decision trees, and regression models.
+
+Supervised learning is a methodology for machine learning in which models are built from training data for which correct classification is known. The data is based on a large curated set of documents categorized by expert human annotators as positive, negative or neutral from which a statistical model is built for each class.
+
+This model is used to classify new documents using the probability estimates for class membership and various thresholds. Bloomberg performs the classification in real time upon the news story’s arrival and regularly updates its models to retain a high fidelity to changing market conditions.
+
+To be scored, stories must meet certain filtering criteria, including length constraints (except for headlines), content type (wire, language, topics), and sufficient content relevant to each company ticker.
+
+Bloomberg’s algorithms extract parts of a story that are pertinent to the company under consideration using text summarization methods and analyze the summary sentiment as well as sentiment of the news article as a whole. Bloomberg combines features from both the company-specific content and the article overall and evaluates the content using statistical machine-learning techniques to find the highest-probability class assignment. A novel agglomerative clustering technique provides statistically valid confidence estimates from Bloomberg’s ensemble of machine-learning methods, thus maintaining the distributive properties of its underlying models.
+
+Specialized algorithms provide an indicator of company sentiment on social media (Twitter), which presents additional challenges that must be tackled to provide meaningful, statistically sound indicators.
+
+Models
+AnalyticsType
+LanguageString
+Latest Version
+Description
+Model (XML Only)
+SENTIMENT
+ENGLISH
+4
+News Sentiment – English Version 4
+COMPANY_SENTIMENT_NEWS_EN_V4
+SENTIMENT
+CHINESE_SIMP
+1
+News Sentiment – Simplified Chinese Version 1
+COMPANY_SENTIMENT_NEWS_ZH_V1
+SENTIMENT
+JAPANESE
+2
+News Sentiment – Japanese Version 1
+COMPANY_SENTIMENT_NEWS_JA_V2
+SENTIMENT_SMEDIA
+ENGLISH
+4
+Social Media Sentiment – English Version 4
+COMPANY_SENTIMENT_SOCIAL_EN_V4
+Appendix
+Wire Code Mapping
+Here is the wire code mapping across Bloomberg Company Sentiment feeds:
+
+Bloomberg News Sources
+Wire Code
+Name
+BN
+Bloomberg News
+BFW
+Bloomberg First Word
+JBN
+Bloomberg Japanese News (in Japanese)
+CBN
+Bloomberg Chinese News (in Simplified Chinese)
+BBO
+Bloomberg Opinion
+Third-Party News Sources
+Wire Code
+Name
+CSJ
+China Securities Journal
+CHD
+China Daily
+TWT
+Twitter (Metadata only)
+EDG
+EDGAR SEC
+MTN
+MT Newswires
+PRN
+PR Newswire
+BUS
+Business Wire
+PZM
+GlobeNewswire, Inc.
+SES
+Securities Times
+AFR
+Australian Financial Review
+PTI
+Press Trust of India
+GUA
+Guardian
+NYT
+New York Times
+ANW
+Allliance News
+DML
+Daily Mail
+ESD
+Evening Standard
+BDR
+Business Insider News
+SDY
+Stock Trader’s Daily
+TEL
+Telegraph UK
+SSX
+Shanghai Securities News
+CRP
+Crypto
+IND
+Independent News
+TSN
+The Sun
+TIL
+Times of London
+GUA
+Guardian
+IBD
+Investor’s Business Daily
+ITN
+IntelliNews
+PAN
+Press Association UK
+ANW
+Allliance News
+DML
+Daily Mail
+MFN
+Modular Finance News
+TST
+TheStreet.com
+BDR
+Business Insider News
+SDY
+Stock Trader’s Daily
+SNW
+SeeNews (The Corporate Wire)
+BTM
+Business Times
+EID
+Economic Information Daily
+TSN
+The Sun
+TEL
+Telegraph UK
+FNE
+Financial News
+FEX
+Financial Express – FEX
+IND
+Independent News
+YIC
+China Business News – YIC
+DIV
+Industry Dive – DIV
+OPA
+African Press Organization
+TIL
+Times of London
+IBD
+Investor’s Business Daily
+PTA
+Pressetext
+TST
+TheStreet.com
+CPH
+China Pharmaceutical Newspapers
+AXS
+Axios – AXS
+FXE
+FX Empire – FXE
+FUU
+Futu Securities
+BWK
+Blockworks
+BKD
+BankruptcyData – BKD
+EDN
+Economic Daily News
+CIX
+Caixin – CIX
+IHB
+Inside Health Policy
+BTI
+Brisbane Times
+STS
+Straits Times
+AII
+SeeNews
+CYA
+City A.M.
+BWK
+Blockworks
+ARP
+Argaam
+KYI
+Kyiv Independent
+FHM
+Faversham House
+BOK
+The Block
+FWV
+Freightwaves
+CTY
+Citywire
+BBJ
+Budapest Business Journal
+ERA
+Eurasianet
+Web-Scraped Sources
+Wire Code
+Name
+NS6
+Web Content – Asia-Pacific except Japan
+NS1
+Web Content – US
+BLG
+Blogs Web Content
+FM6
+Financial Markets Web Content – Asia-Pacific
+NS4
+Web Content – Japan
+NS8
+Web Content – Africa/Mideast
+CO6
+Company Web Content – Asia Pacific
+WE1
+General Web Content – US
+NS3
+Web Content – UK
+GO1
+Government Web Content – US
+CO4
+Company Web Content – Japan
+CO1
+Company Web Content – US
+NS5
+Web Content – Europe except UK
+NS2
+Web Content – Canada
+CO5
+Company Web Content – Europe except UK
+WE6
+General Web Content – Asia-Pacific except Japan
+CO2
+Company Web Content – Canada
+CO8
+Company Web Content – Africa/Middle East
+WE9
+General Web Content – International
+FM5
+Financial Markets Web Content – Europe except UK
+CO3
+Company Web Content – United Kingdom
+WE5
+General Web Content – Europe except UK
+GO6
+Government Web Content – Asia Pacific except Japan
+FM1
+Financial Market Web Content – US
+WE4
+General Web Content – Japan
+FM9
+Financial Markets Web Content – International
+GO5
+Government Web Content – Europe except UK
+WE3
+General Web Content – UK
+FM8
+Financial Markets Web Content – Africa/Mideast
+NS7
+Web Content – Latin America
+CO7
+Company Web Content – Latin America
+WE8
+General Web Content – Africa/Mideast
+CAI
+Caijing
+IN6
+Industrial Org. Web Content – Asia Pacific except Japan
+WE2
+General Web Content – Canada
+CBC
+CBC News
+PDA
+People’s Daily
+IN1
+Industrial Org. Web Content – US
+CNN
+CNN
+GLO
+Globe and Mail
+ABC
+ABC News
+TOR
+Toronto Star
+GO9
+Government Web Content – International
+GO4
+Government Web Content – Japan
+FOX
+Fox News
+BBC
+BBC News
+NWK
+Newsweek
+BFO
+BSE Circulars – English
+USA
+USA Today
+ITA
+ITAR-TASS
+GO3
+Government Web Content – UK
+GO8
+Government Web Content – Africa/Mideast
+YNA
+Yonhap News
+BGL
+Boston Globe
+MSA
+Morningstar (Web)
+TSD
+The Standard
+IIA
+Interfax Information Agency
+IN3
+Industrial Org. Web Content – UK
+JPT
+Jerusalem Post
+CBS
+CBS News
+DMI
+Daily Mirror
+FM7
+Financial Markets Web Content – Latin America
+SLE
+Newark Star-Ledger
+GO2
+Government Web Content – Canada
+AMR
+American Banker (Web)
+SKY
+Sky News
+IN5
+Industrial Org. Web Content – Europe
+FOR
+Forbes
+IN8
+Industrial Org. Web Content – Africa/Mideast
+KYW
+Kyodo
+TIM
+Time
+FUJ
+Fuji News Network
+GO7
+Government Web Content – Latin America
+HUR
+Hurriyet
+FM3
+Financial Markets Web Content – UK
+CHO
+Chosun Ilbo
+MSN
+MSNBC
+IN9
+Industrial Org. Web Content – International
+IN4
+Industrial Org. Web Content – Japan
+WE7
+General Web Content – Latin America
+CHR
+Christian Science Monitor
+PAI
+El Pais
+BOB
+Bond Buyer (New)
+HNI
+Hankyoreh
+NYR
+New Yorker
+FM4
+Financial Markets Web Content – Japan
+FM2
+Financial Markets Web Content – Canada
+DSP
+Der Spiegel
+FOT
+Fortune
+CLM
+Major Columnists Worldwide

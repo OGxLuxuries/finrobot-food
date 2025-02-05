@@ -1,0 +1,426 @@
+Introduction
+Service Description
+The Market Moving News (MMN) Service helps you to identify news stories with a high likelihood of causing significant price moves of equity securities.
+
+Service Scope
+API Endpoint
+The Market Moving News Service is available via the Bloomberg API (BLPAPI).
+
+The following API endpoint allows you to access market moving news data: //blp/mktnews-content/analytics
+
+Required EIDs
+Subscription Name
+EID
+Bloomberg Company Market Moving News
+80048
+Miscellaneous (non-Bloomberg) Market Moving News
+80180
+Structure
+The structure of the feed message is similar to other story-level analytics messages, providing time of arrival, story identifier, confidence value, and the headline. The confidence value is a true Bayesian estimate for the probability of market reaction.
+
+Bloomberg Terminal Consistency
+The underlying Market Moving News data is consistent with the Market Moving News (MMN <GO>) function on the Bloomberg Terminal®.
+
+MMN Algorithm
+A machine-learning algorithm uses features of the story (specific words and phrases, parts of speech, incidence of currency values, dates, etc.) as well as market data for the security in question (market cap, etc.) to calculated market-moving news scores.
+
+Methodology
+Retrospective analysis of the equity securities’ time series provides the training data for the learning phase of the algorithm. You receive a message if the confidence value is above a fairly high threshold, reflecting the fact that true market-moving news events are comparatively rare and to reduce the false positive rate.
+
+An algorithm called segmented regression (with some smoothing and normalization) runs on the 24-hour time series of 30-second price bars. It essentially breaks the time series into best-fit line segments (“trends”), minimizing total RMSE. An expert system then goes over the trends and selects ones that look “anomalous” based on differences of trends’ slopes, trading volume and other factors.
+
+Then, news stories in the time window that includes the beginning of the trend in question are retrieved and scored based on a Bayesian model built from confirmed examples of stories that have moved the market, taking into account the publish time and story metadata.
+
+The time window and the parameters of the regression vary based on the time of day — from a minimum of 1 to a maximum of 20. The Market Moving News (MMN <GO>) function shows the results of this analysis.
+
+Example XML Message
+XML
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<StoryAnalytics>
+<Id>
+<SUID>Q7RLHL6K50XW</SUID>
+</Id>
+<Metadata>
+<WireId>25</WireId>
+<ClassNum>51</ClassNum>
+<WireName>BN</WireName>
+<Headline>*APPLE WEIGHS DELAYING 5G IPHONE BY MONTHS: NIKKEI</Headline>
+<SourceId>MMNPRED</SourceId>
+<TimeOfArrival>2020-03-25T19:44:09.959+00:00</TimeOfArrival>
+<StoryGroupId></StoryGroupId>
+</Metadata>
+<StructuredScoreList>
+<AnalyticsType>MMN</AnalyticsType>
+<StructuredScore>
+<Score>1</Score>
+<Confidence>0.1010539005471241</Confidence>
+<EntityId>AAPL</EntityId>
+<EntityType>COMPANY</EntityType>
+<BloombergEntityId>BBG001FDZRP7</BloombergEntityId>
+<SecurityFigi>BBG000B9XRY4</SecurityFigi>
+<LanguageId>1</LanguageId>
+<LanguageString>ENGLISH</LanguageString>
+</StructuredScore>
+<Version>2</Version>
+<StoryType>ADD_STORY</StoryType>
+</StructuredScoreList>
+<DerivedTopics>
+<ScoredEntity>
+<Id>ACEXCLUDE</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>ALLHOT</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BGOVBILLGO</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BIZNEWS</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BONDWIRES</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BROKERLITE</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BUSINESS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>CA</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>CMDGLOMAC</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>CORONAVIR</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>COS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>CPNYCNT1</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>CPR</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>ELE</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>EQUITYKEY</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>FINNEWS</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>FXKEY</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>GENHEA</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>GLOBALMACR</Id>
+<Score>98</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>HEADS</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>HOT</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>ILLNESS</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>INFECT</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>IPHONE</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MAJOR</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MARKETS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MOBILE</Id>
+<Score>71</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MSCINAMER</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MSCIWORLD</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MTGEKEY</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>NORTHAM</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>RLSHEAD</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>SOF</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>SRCRANK1</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity
+>
+<Id>TEC</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TIMECO</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TIMENI</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TMT</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TOP</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>US</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>USWE</Id>
+<Score>100</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>VIRALILL</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>WRLS</Id>
+<Score>100</Score>
+</ScoredEntity>
+</DerivedTopics>
+</StoryAnalytics>
+</ContentT>
+MMN Subscriptions
+ HINT
+
+For detailed guidance on subscribing to real-time data using the Bloomberg API (BLPAPI), see Bloomberg API Guide > Subscriptions.
+
+Subscription Strings
+Here is an example of a string used to subscribe to the Market Moving News feed:
+
+//blp/mktnews-content/analytics/eid/80048?format=xml
+
+Where:
+
+String Element
+Description
+//blp/mktnews-content
+The market news and analytics service name
+/analytics
+The topic name1
+/eid/80048
+The entitlement identifier for Bloomberg Company Market Moving News
+?format=xml
+Returned data appears in XML format2
+1 The topic name news is used with other EDF services such as Bloomberg News Headlines and Dow Jones News Feed.
+
+2 You can also indicate that returned data appears in json format with ?format=json.
+
+MMN on First Pass
+ HINT
+
+For detailed guidance on handling Events returned via the Bloomberg API, see Bloomberg API Guide > Event Handling.
+
+The conventional MMN indicator uses ADD_STORY messages to generate the prediction score. Compared with ADD_1STPASS messages, the ADD_STORY messages contain an extended set of machine-derived tags, albeit at a latency cost of around 100 milliseconds. While enriched content generally leads to better prediction accuracy, the latency cost can become extremely expensive for selected application scenarios.
+
+Methodology
+The MMN on First Pass is a latency-optimized MMN indicator with which the calculation is based on the native content of ADD_1STPASS messages.
+
+Example XML Message
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<StoryAnalytics>
+<Id>
+<SUID>Q4XVYY6K50Y8</SUID>
+</Id>
+<Metadata>
+<WireId>25</WireId>
+<ClassNum>51</ClassNum>
+<WireName>BN</WireName>
+<Headline>*IBM CEO VIRGINIA ROMETTY WILL RETIRE AT THE END OF THIS YEAR</Headline>
+<SourceId>MMNPRED_FIRSTPASS</SourceId>
+<TimeOfArrival>2020-01-30T21:35:22.585+00:00</TimeOfArrival>
+<StoryGroupId></StoryGroupId>
+</Metadata>
+<StructuredScoreList>
+<AnalyticsType>MMN_1STPASS</AnalyticsType>
+<StructuredScore>
+<Score>1</Score>
+<Confidence>0.008521183358476082</Confidence>
+<EntityId>IBM</EntityId>
+<EntityType>COMPANY</EntityType>
+<BloombergEntityId>BBG001G4LRK6</BloombergEntityId>
+<SecurityFigi>BBG000BLNNH6</SecurityFigi>
+<LanguageId>1</LanguageId>
+<LanguageString>ENGLISH</LanguageString>
+</StructuredScore>
+<StructuredScore>
+<Score>1</Score>
+<Confidence>0.008013990187133854</Confidence>
+<EntityId>RHT</EntityId>
+<EntityType>COMPANY</EntityType>
+<BloombergEntityId>BBG001G2HDZ0</BloombergEntityId>
+<SecurityFigi>BBG000BWXL85</SecurityFigi>
+<LanguageId>1</LanguageId>
+<LanguageString>ENGLISH</LanguageString>
+</StructuredScore>
+<Version>2</Version>
+<StoryType>ADD_1STPASS</StoryType>
+</StructuredScoreList>
+<DerivedTopics>
+<ScoredEntity>
+<Id>ALLHOT</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BIZNEWS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MSCIWORLD</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>NORTHAM</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>GLOBALMACR</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>NY</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>ACEXCLUDE</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>BUSINESS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TMT</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>HEADS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MARKETS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>US</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>NC</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>USSO</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>HOT</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TOP</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>ITSVC</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>TEC</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>USMA</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>COS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>USSE</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>MSCINAMER</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>FINNEWS</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>SOF</Id>
+<Score>70</Score>
+</ScoredEntity>
+<ScoredEntity>
+<Id>RLSHEAD</Id>
+<Score>70</Score>
+</ScoredEntity>
+</DerivedTopics>
+</StoryAnalytics>
+</ContentT>

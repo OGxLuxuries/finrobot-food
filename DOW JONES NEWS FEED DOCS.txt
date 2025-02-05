@@ -1,0 +1,1324 @@
+DOW JONES NEWS FEED DOCS
+Introduction
+Service Description
+The Dow Jones News Feed Service delivers low-latency access to Dow Jones news content in machine-readable formats, including HTML, XML, and JSON, allowing you to access breaking news stories for use in your research and analytics applications.
+
+Service Scope
+API Endpoint
+The Dow Jones News Feed Service is available via the Bloomberg API (BLPAPI).
+
+The following API endpoint allows you to access Dow Jones News Feed data:
+
+//blp/mktnews-dowjonesnews
+
+Required EID
+The Dow Jones News Feed Service is available over Bloomberg Real-Time Services at this EID:
+
+81347
+
+Ensure that your application and the users of the application are entitled to the service and all of the requested documents.
+
+Available Data
+The Dow Jones News Feed provides the following content:
+
+Barron’s (weekly content)
+Dow Jones News (Japanese)
+Dow Jones News (English, German), WSJ Pro Verticals, Barron’s (real time), MarketWatch
+Dow Jones News (Traditional Chinese)
+Dow Jones News (Simplified Chinese)
+Dow Jones Federal Filings Content
+Dow Jones Press Releases Content
+The New York Post
+The Wall Street Journal (daily 2:00 am EDT run), containing all stories as they appear in the paper
+Bulk Datasets
+You can download end-of-day Dow Jones News Feed Bulk datasets at DATA <GO>. Before proceeding, you must have a valid Bloomberg Data License account with the appropriate permissions for downloading EDF data.
+
+For more: Bulk Products > Dow Jones News
+
+Subscribing to Data
+ HINT
+
+For detailed guidance on subscribing to real-time data using the Bloomberg API (BLPAPI), see Bloomberg API Guide > Subscriptions.
+
+Subscription Strings
+You can receive Dow Jones News Feed Service notifications in either XML or JSON format:
+
+//blp/mktnews-dowjonesnews/eid/81347?format=xml
+//blp/mktnews-dowjonesnews/eid/81347?format=json
+Subscription Syntax
+The subscription naming convention followed in the BLPAPI is as follows:
+
+<service name>-<topic name>/<eid>?<options>
+
+Convention
+Description
+<service name>
+The name of the service to which you want to subscribe, e.g., //blp/mktnews
+<topic name>
+The name of the topic for which you want to receive notifications, e.g., -dowjonesnews (the Dow Jones News Feed)
+<eid>
+The entitlement identifier that your application has been assigned in the Entitlements Management and Reporting System (EMRS)
+<options>
+The format of the //blp/mktnews service data in the CONTENT element. The syntax is format=<format>, where the format is either xml or json.
+Subscription Code Example
+Java
+
+public static void main(String[] args) throws Exception { 
+       // Create and start session here
+       SessionOptions sessionOptions = new SessionOptions();
+                    :
+       Session session = new Session(sessionOptions); 
+       if (!session.start()) {
+            System.err.println("Could not start session."); 
+            System.exit(1);
+       }
+
+       // Authenticate application name here 
+       Identity identity = createIdentity();
+       // Generate application token
+       // Authorize token
+
+       if (!session.openService("//blp/mktnews/")) { 
+              System.err.println("Could not start session."); 
+              System.exit(1);
+       }
+       CorrelationID subscriptionID = new CorrelationID(2);
+       SubscriptionList subscriptions = new 
+       SubscriptionList(); subscriptions.add(new Subscription(
+              "//blp/mktnews-dowjonesnews/eid/81347?format=json",
+              subscriptionID)); 
+       session.subscribe(subscriptions, identity);
+        int updateCount =
+        0; while (true)
+        {
+              Event event = session.nextEvent(); 
+              switch (event.eventType().intValue())
+              {
+              caseEvent.EventType.Constants.SUBSCRIPTION_DATA:
+                      handleDataEvent(event, updateCount++);
+                      break; 
+              caseEvent.EventType.Constants.SUBSCRIPTION_STATUS: 
+              processSubscriptionStatus(event, session);
+              break;
+        default:
+               handleOtherEvent (event
+               );
+              break;
+Handling Responses
+ HINT
+
+For detailed guidance on handling Events returned via the Bloomberg API, see Bloomberg API Guide > Event Handling.
+
+The following response examples show the data returned from the Dow Jones News Feed Service in a search for Dow Jones content about the company Australia & New Zealand Bank Group Ltd. with metadata applied. The examples include content in multiple languages (English, Traditional Chinese, Simplified Chinese, and Japanese) and in HTML and full-text-document formats.
+
+English-Language Responses
+HTML English Response Code Example
+HTTPS
+
+<Archive StartTime="2021-09-30T00:00:00.000+00:00" EndTime="2021-10-01T00:00:00.000+00:00">
+  <ContentT SchemaVersion="2020-05-13T00:00:00.000000Z" Origin="API" CaptureTime="2021-09-30T00:00:00.433+00:00" EID="81347">
+   <StoryContent>
+    <Id>
+     <SUID>QHG2O0073NCX</SUID>
+    </Id>
+    <Event>ADD_STORY</Event>
+    <Story ContentType="Current">
+     <Body><!DOCTYPE html><html><head></head><body> <p> </p> <p>(Dow Jones) -- (MORE TO FOLLOW) Dow Jones Newswires</p> </body></html></Body>
+     <BodyTextType>STYTYPE_HTML</BodyTextType>
+     <Version>ORIGINAL</Version>
+     <Metadata>
+      <WireId>2546</WireId>
+      <ClassNum>101</ClassNum>
+      <WireName>DJ</WireName>
+      <Headline>*New Zealand ANZ Sep Firms' Own Activity Outlook -5.4%; Aug -17.5%</Headline>      
+      <TimeOfArrival>2021-09-30T00:00:00.046+00:00</TimeOfArrival>
+     <HeadlineClusterId>TYe6FKKgH5VlZjE0exuW7DA==</HeadlineClusterId>
+     <LanguageId>1</LanguageId>
+     <LanguageString>ENGLISH</LanguageString>
+     <VendorId>20200929012215</VendorId>
+     <TopicClusterId>QHG2O0073NCX</TopicClusterId>
+     <TextEncoding>65001</TextEncoding>
+     <HotLevel>0</HotLevel>
+     <TimeOfUpdate>2020-09-30T00:00:00.054+00:00</TimeOfUpdate>
+     <AssignedTopics>
+      <ScoredEntity>
+       <Id>CMR</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>BIZNEWS</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>BUSINESS</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJFE</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJW</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJAER</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>IEI</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>PRMSRC</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJDJG</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJC</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>ECO</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJAN</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>FINNEWS</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJI</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>AER</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJZ</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DGM</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+     </AssignedTopics>
+     <DerivedTopics>
+      <ScoredEntity>
+       <Id>CMR</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>BIZNEWS</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>BUSINESS</Id>
+       <Score>91</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>HEADS</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>MISC</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJFE</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJW</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>ANZ</Id>
+       <Score>80</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJAER</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>IEI</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>WORLD</Id>
+       <Score>80</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>PRMSRC</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DOWCODES</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJDJG</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJC</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>SRCRANK1</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>ECO</Id>
+       <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJAN</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>FINNEWS</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJI</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>SPREGIONS</Id>
+       <Score>80</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>AER</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DJZ</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+       <Id>DGM</Id>
+       <Score>100</Score>
+      </ScoredEntity>
+     </DerivedTopics>
+     <HybridTopicClusterId>QHG2O0073NCX</HybridTopicClusterId>
+     <Indicators>
+      <isBNExclusive>false</isBNExclusive>
+      <isLetters>false</isLetters>
+      <isMarketMover>false</isMarketMover>
+     </Indicators>
+    </Story>
+   </StoryContent>
+</ContentT>
+HTML English Full-Text Response Code Example
+HTTPS
+
+<ContentT SchemaVersion="2021-05-13T00:00:00.000000Z" Origin="API" CaptureTime="2021-09-30T00:00:02.694+00:00" EID="81347">
+  <StoryContent>
+   <Id->
+    <SUID>QHG2O2073NCW</SUID>
+   </Id>
+   <Event>ADD_STORY</Event>
+   <Story ContentType="Current">
+    <Body> <!DOCTYPE html><html><head></head><body> <p> Lundin Mining Provides Update on Chapada Operations </p> <p> PR Newswire </p> <p> TORONTO, Sept. 29, 2021 </p> <p> TORONTO, Sept. 29, 2021 /PRNewswire/ - (TSX: LUN) (Nasdaq: LUMI) (Stockholm: LUMI) Lundin Mining Corporation ("Lundin Mining" or the "Company") provides an initial update on the anticipated timeline to resume processing at the Chapada mine in Brazil. Activities are underway to resume partial processing within one week, with a return to full capacity currently expected to be achieved within 60 days. View PDF version </p> <p> The four mill motors that experienced damage have been removed and are currently being transported to repair facilities within Brazil. The motors are expected to arrive at the facilities later this week, with confirmation of the extent of repair required, cost and expectation of timing to be confirmed early next week. Repair costs are not expected to be material. </p> <p> The onsite spare motor has been installed on the SAG mill. The second spare motor is nearing completion of its rehabilitation and, pending final testing, is anticipated to arrive at the mine early next week. The Company is anticipating and making preparations to resume processing using these two motors on the SAG mill. It is expected that the rate of production would be approximately 30% of normal production capacity based on past experience operating this SAG mill circuit without the ball mill. </p> <p> The Company has also adjusted other activities in response to the interruption to normal processing. Mill maintenance originally planned for October of this year is being brought forward. Planning is underway to undertake crusher and conveyor maintenance. Mining activities have been refocused on building run of mine ore stockpile at the crushers, as well as waste removal and development activities. </p> <p> The Company will provide additional information and updates on the operation's 2020 guidance as appropriate. </p> <p> About Lundin Mining </p> <p> Lundin Mining is a diversified Canadian base metals mining company with operations in Brazil, Chile, Portugal, Sweden and the United States of America, primarily producing copper, zinc, gold and nickel. </p> <p> The information in this release is subject to the disclosure requirements of Lundin Mining under the EU Market Abuse Regulation. The information was submitted for publication, through the agency of the contact persons set out below on September 29, 2020 at 20:00 Eastern Time. </p> <p> Cautionary Statement in Forward-Looking Information </p> <p> Certain of the statements made and information contained herein is "forward-looking information" within the meaning of applicable Canadian securities laws. All statements other than statements of historical facts included in this document constitute forward-looking information, including but not limited to statements regarding the Company's plans, prospects and business strategies; the Company's guidance on the timing and amount of future production and its expectations regarding the results of operations; expected costs; permitting requirements and timelines; timing and possible outcome of pending litigation; the results of any Feasibility Study, or Mineral Resource and Mineral Reserve estimations, life of mine estimates, and mine and mine closure plans; anticipated market prices of metals, currency exchange rates, and interest rates; the development and implementation of the Company's Responsible Mining Management System; the Company's ability to comply with contractual and permitting or other regulatory requirements; anticipated exploration and development activities at the Company's projects; and the Company's integration of acquisitions and any anticipated benefits thereof. Words such as "believe", "expect", "anticipate", "contemplate", "target", "plan", "goal", "aim", "intend", "continue", "budget", "estimate", "may", "will", "can", "could", "should", "schedule" and similar expressions identify forward-looking statements. </p> <p> Forward-looking information is necessarily based upon various estimates and assumptions including, without limitation, the expectations and beliefs of management, including that the Company can access financing, appropriate equipment and sufficient labour; assumed and future price of copper, nickel, zinc, gold and other metals; anticipated costs; ability to achieve goals; the prompt and effective integration of acquisitions; that the political environment in which the Company operates will continue to support the development and operation of mining projects; and assumptions related to the factors set forth below. While these factors and assumptions are considered reasonable by Lundin Mining as at the date of this document in light of management's experience and perception of current conditions and expected developments, these statements are inherently subject to significant business, economic and competitive uncertainties and contingencies. Known and unknown factors could cause actual results to differ materially from those projected in the forward-looking statements and undue reliance should not be placed on such statements and information. Such factors include, but are not limited to: volatility and fluctuations in metal and commodity prices; global financial conditions and inflation; risks inherent in mining including but not limited to risks to the environment, industrial accidents, catastrophic equipment failures, unusual or unexpected geological formations or unstable ground conditions, and natural phenomena such as earthquakes, flooding or unusually severe weather; uninsurable risks; changes in the Company's share price, and volatility in the equity markets in general; the threat associated with outbreaks of viruses and infectious diseases, including the novel COVID-19 virus; risks related to negative publicity with respect to the Company or the mining industry in general; reliance on a single asset; potential for the allegation of fraud and corruption involving the Company, its customers, suppliers or employees, or the allegation of improper or discriminatory employment practices, or human rights violations; actual ore mined and/or metal recoveries varying from Mineral Resource and Mineral Reserve estimates, estimates of grade, tonnage, dilution, mine plans and metallurgical and other characteristics; risks associated with the estimation of Mineral Resources and Mineral Reserves and the geology, grade and continuity of mineral deposits including but not limited to models relating thereto; ore processing efficiency; risks inherent in and/or associated with operating in foreign countries and emerging markets; security at the Company's operations; changing taxation regimes; health and safety risks; exploration, development or mining results not being consistent with the Company's expectations; unavailable or inaccessible infrastructure and risks related to ageing infrastructure; counterparty and credit risks and customer concentration; risks related to the environmental regulation and environmental impact of the Company's operations and products and management thereof; exchange rate fluctuations; reliance on third parties and consultants in foreign jurisdictions; community and stakeholder opposition; civil disruption; the potential for and effects of labour disputes or other unanticipated difficulties with or shortages of labour or interruptions in production; uncertain political and economic environments; litigation; regulatory investigations, enforcement, sanctions and/or related or other litigation; risks associated with the structural stability of waste rock dumps or tailings storage facilities; changes in laws, regulations or policies including but not limited to those related to mining regimes, permitting and approvals, environmental and tailings management, labour, trade relations, and transportation; climate change; compliance with environmental, health and safety laws; enforcing legal rights in foreign jurisdictions; information technology and cybersecurity risks; estimates of future production and operations; estimates of operating, cash and all-in sustaining cost estimates; delays or the inability to obtain, retain or comply with permits; compliance with foreign laws; risks related to mine closure activities and closed and historical sites; challenges or defects in title; the price and availability of key operating supplies or services; historical environmental liabilities and ongoing reclamation obligations; indebtedness; funding requirements and availability of financing; liquidity risks and limited financial resources; risks relating to attracting and retaining of highly skilled employees; risks associated with acquisitions and related integration efforts, including the ability to achieve anticipated benefits, unanticipated difficulties or expenditures relating to integration and diversion of management time on integration; the estimation of asset carrying values; internal controls; competition; dilution; existence of significant shareholders; conflicts of interest; activist shareholders and proxy solicitation matters; risks relating to dividends; risks associated with business arrangements and partners over which the Company does not have full control; and other risks and uncertainties, including but not limited to those described in the "Risks and Uncertainties" section of the Annual Information Form and the "Managing Risks" section of the Company's MD&amp;A for the year ended December 31, 2019, which are available on SEDAR at www.sedar.com under the Company's profile. All of the forward-looking statements made in this document are qualified by these cautionary statements. Although the Company has attempted to identify important factors that could cause actual results to differ materially from those contained in forward-looking information, there may be other factors that cause results not to be as anticipated, estimated, forecast or intended and readers are cautioned that the foregoing list is not exhaustive of all factors and assumptions which may have been used. Should one or more of these risks and uncertainties materialize, or should underlying assumptions prove incorrect, actual results may vary materially from those described </p> <p> (MORE TO FOLLOW) Dow Jones Newswires</p> </body></html> </Body>
+    <BodyTextType>STYTYPE_HTML</BodyTextType>
+    <Version>ORIGINAL</Version>
+     <Metadata>
+     <WireId>3666</WireId>
+     <ClassNum>101</ClassNum>
+     <WireName>DPR</WireName>
+     <Headline>Press Release: Lundin Mining Provides Update on Chapada Operations</Headline>
+     <TimeOfArrival>2020-09-30T00:00:02.130+00:00</TimeOfArrival>
+    </Metadata>
+    <HeadlineClusterId>TycKgkHIrX4lRu4A612zMPw==</HeadlineClusterId>
+    <LanguageId>1</LanguageId>
+    <LanguageString>ENGLISH</LanguageString>
+    <VendorId>20200929012216</VendorId>
+    <TopicClusterId>QHG2O13H65TS</TopicClusterId>
+    <TextEncoding>65001</TextEncoding>
+    <HotLevel>0</HotLevel>
+    <TimeOfUpdate>2020-09-30T00:00:02.137+00:00</TimeOfUpdate>
+    <AssignedTickers>
+     <ScoredEntity>
+       <Id>LUN@CN</Id>
+       <Score>70</Score>
+       <BloombergEntityId>BBG001FGC1X3</BloombergEntityId>
+       <SecurityFigi>BBG000K1XDF3</SecurityFigi>
+       <ID_BB_GLOBAL>BBG000K1XDF3</ID_BB_GLOBAL>
+       <ID_BB_GLOBAL_COMPANY>BBG001FGC1X3</ID_BB_GLOBAL_COMPANY>
+     </ScoredEntity>
+    </AssignedTickers>
+    <AssignedTopics>
+     <ScoredEntity>
+       <Id>BIZNEWS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>BUSINESS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MARKETS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMD</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>BASIC</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMDX</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MET</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DJPR</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DJDJG</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>COS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>FINNEWS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>RLS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+    </AssignedTopics>
+    <DerivedTickers>
+     <ScoredEntity>
+       <Id>LUN@CN</Id>
+       <Score>96</Score>
+       <BloombergEntityId>BBG001FGC1X3</BloombergEntityId>
+       <SecurityFigi>BBG000K1XDF3</SecurityFigi>
+       <ID_BB_GLOBAL>BBG000K1XDF3</ID_BB_GLOBAL>
+       <ID_BB_GLOBAL_COMPANY>BBG001FGC1X3</ID_BB_GLOBAL_COMPANY>
+     </ScoredEntity>
+    </DerivedTickers>
+    <DerivedTopics>
+     <ScoredEntity>
+       <Id>METALKEY</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>COPPER</Id>
+       <Score>80</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>BIZNEWS</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MSCIWORLD</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>NORTHAM</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CPNYCNT1</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>BUSINESS</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>G7MEMB</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>NONFERR</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MISC</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>ESGSOC</Id>
+       <Score>50</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MARKETS</Id>
+       <Score>70</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMD</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CANADA</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MTL</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>BASIC</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>EQUITYKEY</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMDX</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>ESGCONTROV</Id>
+       <Score>69</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>WORLD</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMDMISC</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>COMMONW</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>INDUSTRIES</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMDIND</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MET</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DEVECO</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DJPR</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>G10MEMB</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>LIGHTMETAL</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>GEN</Id>
+       <Score>50</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DOWCODES</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DJDJG</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>ESGRES</Id>
+       <Score>69</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CMDKEY</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>COS</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>NICKEL</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MSCINAMER</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>FINNEWS</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>SRCRANK3</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>ZN</Id>
+       <Score>50</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>METMNG</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>SPREGIONS</Id>
+       <Score>75</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>CRIME</Id>
+       <Score>37</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>HUMANRIGHT</Id>
+       <Score>50</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>ESG</Id>
+       <Score>50</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MNG</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>RLS</Id>
+       <Score>100</Score>
+     </ScoredEntity>
+    </DerivedTopics>
+    <HybridTopicClusterId>QHG2O13H65TS</HybridTopicClusterId>
+    <UnverifiedTickers>
+     <ScoredEntity>
+       <Id>MARKETCAP</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>REGIONNORTHAMERICA</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>DOMICILE</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>MKTCAP1BLN5BLN</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>COUNTRY2</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+     <ScoredEntity>
+       <Id>ALL_COMPANIES</Id>
+       <Score>96</Score>
+     </ScoredEntity>
+    </UnverifiedTickers>
+    <Indicators>
+     <isBNExclusive>false</isBNExclusive>
+     <isLetters>false</isLetters>
+     <isMarketMover>false</isMarketMover>
+    </Indicators>
+   </Story>
+  </StoryContent>
+</ContentT>
+Chinese-Language Responses
+HTML Traditional Chinese Response Code Example
+HTTPS
+
+<ContentT SchemaVersion="2021-05-13T00:00:00.000000Z" Origin="API" CaptureTime="2021-09-30T00:00:00.433+00:00" EID="81347">
+  <StoryContent>
+           <Id>
+     <SUID>QHG2O0073NCY</SUID>
+    </Id>
+    <Event>ADD_STORY</Event>
+     <Story ContentType="Current">
+     <Body><!DOCTYPE html><html><head></head><body> <p> </p> <p>(Dow Jones) -- (MORE TO FOLLOW) Dow Jones Newswires</p> </body></html></Body>
+     <BodyTextType>STYTYPE_HTML</BodyTextType>
+     <Version>ORIGINAL</Version>
+     <Metadata>
+      <WireId>787</WireId>
+      <ClassNum>309</ClassNum>
+      <WireName>DJH</WireName>
+      <Headline>*新西蘭澳新銀行9月商業信心指數-28.5%﹔8月-41.8%</Headline>
+      <TimeOfArrival>2021-09-30T00:00:00.057+00:00</TimeOfArrival>
+     </Metadata>
+     <HeadlineClusterId>TQFeiOia23WaEvaEH1mURiA==</HeadlineClusterId>
+     <LanguageId>8</LanguageId>
+     <LanguageString>CHINESE_TRAD</LanguageString>
+     <VendorId>20200929006244</VendorId>
+     <TopicClusterId>QHG2O0073NCY</TopicClusterId>
+     <TextEncoding>65001</TextEncoding>
+     <HotLevel>0</HotLevel>
+     <TimeOfUpdate>2021-09-30T00:00:00.066+00:00</TimeOfUpdate>
+     <AssignedTopics>
+          <ScoredEntity>
+        <Id>BIZNEWS</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>BUSINESS</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DJFE</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>IEI</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>PRMSRC</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ECO</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>FINNEWS</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+     </AssignedTopics>
+     <DerivedTickers>
+      <ScoredEntity>
+        <Id>ANZ@AU</Id>
+        <Score>98</Score>
+        <BloombergEntityId>BBG001FFBTS1</BloombergEntityId>
+        <SecurityFigi>BBG000BB79Q7</SecurityFigi>
+        <ID_BB_GLOBAL>BBG000BB79Q7</ID_BB_GLOBAL>
+        <ID_BB_GLOBAL_COMPANY>BBG001FFBTS1</ID_BB_GLOBAL_COMPANY>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>71194Z</Id>
+        <Score>98</Score>
+        <BloombergEntityId>BBG001GZ6W32</BloombergEntityId>
+        <SecurityFigi>BBG000LZFVG6</SecurityFigi>
+        <ID_BB_GLOBAL>BBG000LZFVG6</ID_BB_GLOBAL>
+        <ID_BB_GLOBAL_COMPANY>BBG001GZ6W32</ID_BB_GLOBAL_COMPANY>
+      </ScoredEntity>
+     </DerivedTickers>
+     <DerivedTopics>
+      <ScoredEntity>
+        <Id>BIZNEWS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>MSCIWORLD</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>BUSINESS</Id>
+        <Score>91</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>HEADS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>MISC</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DJFE</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ANZ</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>IEI</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>WORLD</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>COMMONW</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DEVECO</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>PRMSRC</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>MSCIDVAS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DOWCODES</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>SRCRANK1</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ECO</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>FINNEWS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>SPREGIONS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>NZ</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ASIA</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+     </DerivedTopics>
+     <HybridTopicClusterId>QHG2O0073NCY</HybridTopicClusterId>
+     <UnverifiedTickers>
+      <ScoredEntity>
+        <Id>COUNTRY23</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>MARKETCAP</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DOMICILE</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>REGIONASIAPACDEV</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>1045860DPL</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>MKTCAP25BLN50BLN</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ALL_COMPANIES</Id>
+        <Score>98</Score>
+      </ScoredEntity>
+     </UnverifiedTickers>
+     <Indicators>
+      <isBNExclusive>false</isBNExclusive>
+      <isLetters>false</isLetters>
+      <isMarketMover>false</isMarketMover>
+     </Indicators>
+    </Story>
+  </StoryContent>
+</ContentT>
+HTML Simplified Chinese Response Code Example
+HTTPS
+
+<ContentT SchemaVersion="2021-05-13T00:00:00.000000Z" Origin="API" CaptureTime="2021-09-30T00:00:00.681+00:00" EID="81347">
+  <StoryContent>
+    <Id>
+      <SUID>QHG2O0073ND0</SUID>
+    </Id>
+    <Event>ADD_STORY</Event>
+    <Story ContentType="Current">
+      <Body><!DOCTYPE html><html><head></head><body> <p> </p> <p>(Dow Jones) -- (MORE TO FOLLOW) Dow Jones Newswires</p>     </body></html></Body>
+      <BodyTextType>STYTYPE_HTML</BodyTextType>
+      <Version>ORIGINAL</Version>
+      <Metadata>
+       <WireId>790</WireId>
+       <ClassNum>308</ClassNum>
+       <WireName>DJS</WireName>
+       <Headline>*新西兰澳新银行9月商业信心指数-28.5%；8月-41.8%</Headline>
+       <TimeOfArrival>2021-09-30T00:00:00.116+00:00</TimeOfArrival>
+      </Metadata>
+      <HeadlineClusterId>TL+g9/EgXw6YMzjREsQxeWw==</HeadlineClusterId>
+      <LanguageId>10</LanguageId>
+      <LanguageString>CHINESE_SIMP</LanguageString>
+      <VendorId>20200929006248</VendorId>
+      <TopicClusterId>QHG2O0073ND0</TopicClusterId>
+      <TextEncoding>65001</TextEncoding>
+      <HotLevel>0</HotLevel>
+      <TimeOfUpdate>2021-09-30T00:00:00.123+00:00</TimeOfUpdate>
+      <AssignedTopics>
+       <ScoredEntity>
+         <Id>BIZNEWS</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>BUSINESS</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>DJFE</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>IEI</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>PRMSRC</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>ECO</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>FINNEWS</Id>
+         <Score>70</Score>
+       </ScoredEntity>
+      </AssignedTopics>
+      <DerivedTickers>
+       <ScoredEntity>
+         <Id>ANZ@AU</Id>
+         <Score>98</Score>
+         <BloombergEntityId>BBG001FFBTS1</BloombergEntityId>
+         <SecurityFigi>BBG000BB79Q7</SecurityFigi>
+         <ID_BB_GLOBAL>BBG000BB79Q7</ID_BB_GLOBAL>
+         <ID_BB_GLOBAL_COMPANY>BBG001FFBTS1</ID_BB_GLOBAL_COMPANY>
+       </ScoredEntity>
+      </DerivedTickers>
+      <DerivedTopics>
+       <ScoredEntity>
+         <Id>BIZNEWS</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>MSCIWORLD</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>ECOSTAT</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>DEBTKEY</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>CPNYCNT1</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>BUSINESS</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>HEADS</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>MISC</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>DJFE</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>ANZ</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>CREDITKEY</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>IEI</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>WORLD</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>COMMONW</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>FXKEY</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>DEVECO</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>PRMSRC</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>MSCIDVAS</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>DOWCODES</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>SRCRANK1</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>ECO</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>FINNEWS</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>SPREGIONS</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>NZ</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>RATESKEY</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>ASIA</Id>
+         <Score>100</Score>
+       </ScoredEntity>
+      </DerivedTopics>
+      <HybridTopicClusterId>QHG2O0073ND0</HybridTopicClusterId>
+      <UnverifiedTickers>
+       <ScoredEntity>
+         <Id>COUNTRY23</Id>
+         <Score>98</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>MARKETCAP</Id>
+         <Score>98</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>DOMICILE</Id>
+         <Score>98</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>REGIONASIAPACDEV</Id>
+         <Score>98</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>MKTCAP25BLN50BLN</Id>
+         <Score>98</Score>
+       </ScoredEntity>
+       <ScoredEntity>
+         <Id>ALL_COMPANIES</Id>
+         <Score>98</Score>
+       </ScoredEntity>
+      </UnverifiedTickers>
+      <Indicators>
+       <isBNExclusive>false</isBNExclusive>
+       <isLetters>false</isLetters>
+       <isMarketMover>false</isMarketMover>
+      </Indicators>
+    </Story>
+  </StoryContent>
+</ContentT>
+Japanese-Language Responses
+HTML Japanese Response Code Example
+HTTPS
+
+<ContentT SchemaVersion="2020-05-13T00:00:00.000000Z" Origin="API" CaptureTime="2020-09-30T00:00:00.681+00:00" EID="81347">
+  <StoryContent>
+   <Id>
+     <SUID>QHG2O0073ND3</SUID>
+   </Id>
+   <Event>ADD_STORY</Event>
+   <Story ContentType="Current">
+     <Body><!DOCTYPE html><html><head></head><body> <p> </p> <p>(Dow Jones) -- (MORE TO FOLLOW) Dow Jones Newswires</p> </body></html></Body>
+     <BodyTextType>STYTYPE_HTML</BodyTextType>
+     <Version>ORIGINAL</Version>
+     <Metadata>
+      <WireId>792</WireId>
+      <ClassNum>313</ClassNum>
+      <WireName>DGR</WireName>
+      <Headline>*NZの企業自社活動見通し、9月は-5.4％・8月は-17.5％＝ANZ</Headline>
+      <TimeOfArrival>2020-09-30T00:00:00.160+00:00</TimeOfArrival>
+     </Metadata>
+     <HeadlineClusterId>TwKfz/bhxw98lvTD6RoQ2Fg==</HeadlineClusterId>
+     <LanguageId>2</LanguageId>
+     <LanguageString>JAPANESE</LanguageString>
+     <VendorId>20200929006251</VendorId>
+     <TopicClusterId>QHG2O0073ND3</TopicClusterId>
+     <TextEncoding>65001</TextEncoding>
+     <HotLevel>0</HotLevel>
+     <TimeOfUpdate>2020-09-30T00:00:00.167+00:00</TimeOfUpdate>
+     <AssignedTopics>
+      <ScoredEntity>
+        <Id>BIZNEWS</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>BUSINESS</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DJFE</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>PRMSRC</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ECO</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>FINNEWS</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>IEN</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+     </AssignedTopics>
+     <DerivedTopics>
+      <ScoredEntity>
+        <Id>BIZNEWS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>BUSINESS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>HEADS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>MISC</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DJFE</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>PRMSRC</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>DOWCODES</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>COS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>SRCRANK1</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>ECO</Id>
+        <Score>70</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>FINNEWS</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>IEN</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+      <ScoredEntity>
+        <Id>JPALL</Id>
+        <Score>100</Score>
+      </ScoredEntity>
+     </DerivedTopics>
+     <HybridTopicClusterId>QHG2O0073ND3</HybridTopicClusterId>
+     <Indicators>
+      <isBNExclusive>false</isBNExclusive>
+      <isLetters>false</isLetters>
+      <isMarketMover>false</isMarketMover>
+     </Indicators>
+   </Story>
+  </StoryContent>
+</ContentT>
+Metadata and Schema
+News Wire Identifiers
+The two-character content codes for Dow Jones & Company news products include the following:
+
+Content
+Wire Code
+Dow Jones News (English)
+DJ
+Dow Jones News (German)
+DJ
+Dow Jones News (Japanese)
+DGR
+Dow Jones News (Traditional Chinese)
+DJH
+Dow Jones News (Simplified Chinese)
+DJS
+Wall Street Journal (Daily 2:00 am EDT Run)
+All stories as they appear in the newspaper
+WSJ
+Wall Street Journal (Daily 2:32 am EDT Run)
+Special run of WSJ.com staff articles
+DJ
+WSJ Pro Verticals
+DJ
+Dow Jones Press Releases Content
+DPR
+Dow Jones Federal Filings Content
+DJF
+Barron’s (Real Time)
+DJ
+Barron’s (Weekly Content)
+BRR
+MarketWatch.com
+DJ
+New York Post
+NYP
+Rich Metadata Fields
+Field
+Description
+ADD_STORY
+News event type (new story)
+COS, FIN, UK, etc.
+Topic code (NI <GO> code)
+DJ, WSJ, etc.
+News wire identifier
+Full
+Full news story text
+Headline
+News story headline
+ID_BB_GLOBAL
+Global company identifier
+ID_BB_GLOBAL_COMPANY
+Bloomberg global company identifier
+People
+A named public person or family
+SUID
+Unique story identifier
+Timestamp
+Millisecond timestamp in Coordinated Universal Time (UTC)
+UPDATE_ATTRIBUTES
+News event type (update of existing story)
+Field Schema
+CSV Field Name
+Description
+XML XPath Name
+Assigned_ID_BB_GLOBAL
+ID_BB_GLOBAL (security identifier) for the primary security of the assigned entity
+/ContentT/StoryContent/Story/AssignedTickers/ScoredEntity/SecurityFigi
+Assigned_ID_BB_GLOBAL_COMPANY
+ID_BB_GLOBAL_COMPANY (company identifier) of the assigned entity
+/ContentT/StoryContent/Story/AssignedTickers/ScoredEntity/BloombergEntityId
+AssignedPeopleId
+BIO <GO> ID for the people that have been assigned to a story by editorials
+/ContentT/StoryContent/Story/AssignedPeople/ScoredEntity/Id
+AssignedPeopleScore
+A 0-100 score that measures the assigned people’s relevance to a story
+/ContentT/StoryContent/Story/AssignedPeople/ScoredEntity/Score
+AssignedTickersId
+The tickers of the entities that have been assigned to a story
+/ContentT/StoryContent/Story/AssignedTickers/ScoredEntity/Id
+AssignedTickersScore
+A 0-100 score that measures the assigned entity’s relevance to a story.
+/ContentT/StoryContent/Story/AssignedTickers/ScoredEntity/Score
+AssignedTopicsId
+NI <GO> topic codes that have been assigned to a story by editorials
+/ContentT/StoryContent/Story/AssignedTopics/ScoredEntity/Id
+AssignedTopicsScore
+A 0-100 score that measures the assigned topic’s relevance to a story
+/ContentT/StoryContent/Story/AssignedTopics/ScoredEntity/Score
+Body
+Story body text
+/ContentT/StoryContent/Story/Body
+BodyTextType
+Format of the story body text
+/ContentT/StoryContent/Story/BodyTextType
+CaptureTime
+Publication time of the message (UTC)
+Derived_ID_BB_GLOBAL
+ID_BB_GLOBAL (security identifier) for the primary security of the derived entity
+/ContentT/StoryContent/Story/DerivedTickers/ScoredEntity/SecurityFigi
+Derived_ID_BB_GLOBAL_COMPANY
+ID_BB_GLOBAL_COMPANY (company identifier) of the derived entity
+/ContentT/StoryContent/Story/DerivedTickers/ScoredEntity/BloombergEntityId
+DerivedPeopleId
+BIO <GO> ID for the people that have been derived using automatic classification rules
+/ContentT/StoryContent/Story/DerivedPeople/ScoredEntity/Id
+DerivedPeopleScore
+A 0-100 score that measures the derived people’s relevance to a story
+/ContentT/StoryContent/Story/DerivedPeople/ScoredEntity/Score
+DerivedTickersId
+The tickers of the entities that have been derived using automatic classification rules
+/ContentT/StoryContent/Story/DerivedTickers/ScoredEntity/Id
+DerivedTickersScore
+A 0-100 score that measures the derived entity’s relevance to a story
+/ContentT/StoryContent/Story/DerivedTickers/ScoredEntity/Score
+DerivedTopicsId
+NI topic codes that have been derived using automatic classification rules
+/ContentT/StoryContent/Story/DerivedTopics/ScoredEntity/Id
+DerivedTopicsScore
+A 0-100 score that measures the derived topic’s relevance to a story
+/ContentT/StoryContent/Story/DerivedTopics/ScoredEntity/Score
+EID
+Entitlement ID (for real-time subscription)
+Event
+Types of the news publication event as story develops
+/ContentT/StoryContent/Event
+Headline
+Headline text (may be blank depending on entitlements)
+/ContentT/StoryContent/Story/Metadata/Headline
+HotLevel
+Story “hot” level. 0(Normal), 1(Hot), 2(Hot+“sticky”)
+/ContentT/StoryContent/Story/HotLevel
+LanguageString
+Story language
+/ContentT/StoryContent/Story/LanguageString
+SUID
+Unique identifier of a news story
+/ContentT/StoryContent/Id/SUID
+TimeOfArrival
+Time that a news story was first created in Bloomberg system (UTC)
+/ContentT/StoryContent/Story/Metadata/TimeOfArrival
+TimeOfUpdate
+The time that a news story was last updated (UTC)
+/ContentT/StoryContent/Story/TimeOfUpdate
+Version
+First (ORIGINAL) or subsequent (UPDATE) stories in a story group
+/ContentT/StoryContent/Story/Version
+WebURL
+URL link for the screen-scraped stories
+/ContentT/StoryContent/Story/WebURL
+WireName
+Wire code that identifies the source of the story
+/ContentT/StoryContent/Story/Metadata/WireName
