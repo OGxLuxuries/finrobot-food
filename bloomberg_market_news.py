@@ -6,9 +6,6 @@ import os
 class BloombergMarketNews:
     def __init__(self):
         self.session = None
-        # EIDs for Market Moving News
-        self.BLOOMBERG_MMN_EID = "80048"  # Bloomberg Company Market Moving News
-        self.MISC_MMN_EID = "80180"      # Miscellaneous Market Moving News
         self.output_dir = os.path.join(os.path.dirname(__file__), "market_news_output")
         
         if not os.path.exists(self.output_dir):
@@ -26,27 +23,39 @@ class BloombergMarketNews:
             print("Failed to start session.")
             return False
             
-        if not self.session.openService("//blp/mktnews-content"):
-            print("Failed to open market news service.")
+        if not self.session.openService("//blp/mktdata"):
+            print("Failed to open market data service.")
             return False
             
         return True
 
     def subscribe(self):
-        """Create and send subscription for market moving news"""
+        """Create and send subscription for market data and news"""
         subscriptions = blpapi.SubscriptionList()
         
-        # Bloomberg Company Market Moving News
-        bloomberg_topic = f"//blp/mktnews-content/analytics/eid/{self.BLOOMBERG_MMN_EID}"
-        bloomberg_correlationId = blpapi.CorrelationId("Bloomberg-MMN")
-        subscriptions.add(topic=bloomberg_topic,
-                         correlationId=bloomberg_correlationId)
-
-        # Miscellaneous Market Moving News
-        misc_topic = f"//blp/mktnews-content/analytics/eid/{self.MISC_MMN_EID}"
-        misc_correlationId = blpapi.CorrelationId("Misc-MMN")
-        subscriptions.add(topic=misc_topic,
-                         correlationId=misc_correlationId)
+        # Subscribe to AAPL news and data
+        fields = [
+            "LAST_PRICE",
+            "NEWS_HEADLINES",
+            "NEWS_STORY",
+            "VOLUME",
+            "BID",
+            "ASK"
+        ]
+        
+        securities = [
+            "AAPL US Equity",
+            "MSFT US Equity",
+            "GOOGL US Equity"
+        ]
+        
+        for security in securities:
+            correlationId = blpapi.CorrelationId(security)
+            subscriptions.add(
+                topic=security,
+                fields=fields,
+                correlationId=correlationId
+            )
 
         self.session.subscribe(subscriptions)
 
@@ -63,45 +72,53 @@ class BloombergMarketNews:
         return True
 
     def _handleDataEvent(self, event):
-        """Handle market moving news updates"""
+        """Handle market data and news updates"""
         for msg in event:
-            self._processNewsMessage(msg)
+            security = msg.correlationId().value()
+            if msg.hasElement("NEWS_HEADLINES") or msg.hasElement("NEWS_STORY"):
+                self._processNewsMessage(msg, security)
+            else:
+                self._processMarketDataMessage(msg, security)
 
-    def _processNewsMessage(self, msg):
-        """Process and save market moving news message"""
-        try:
-            # Parse the XML structure based on documentation
-            if msg.hasElement("StoryAnalytics"):
-                analytics = msg.getElement("StoryAnalytics")
-                
-                # Get metadata
-                metadata = analytics.getElement("Metadata")
-                headline = metadata.getElementAsString("Headline") if metadata.hasElement("Headline") else "N/A"
-                time_of_arrival = metadata.getElementAsString("TimeOfArrival") if metadata.hasElement("TimeOfArrival") else "N/A"
-                
-                # Get score information
-                score_list = analytics.getElement("StructuredScoreList")
-                if score_list.hasElement("StructuredScore"):
-                    score = score_list.getElement("StructuredScore")
-                    confidence = score.getElementAsFloat("Confidence") if score.hasElement("Confidence") else 0.0
-                    entity_id = score.getElementAsString("EntityId") if score.hasElement("EntityId") else "N/A"
-                
-                # Print formatted news
-                print("\n=== Market Moving News ===")
-                print(f"Time: {time_of_arrival}")
-                print(f"Headline: {headline}")
-                print(f"Entity: {entity_id}")
-                print(f"Confidence: {confidence:.4f}")
-                print("========================\n")
-                
-                # Save to file
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                filename = os.path.join(self.output_dir, f"mmn_{timestamp}.xml")
-                with open(filename, "w", encoding="utf-8") as f:
-                    f.write(msg.toString())
-                    
-        except Exception as e:
-            print(f"Error processing news message: {e}")
+    def _processNewsMessage(self, msg, security):
+        """Process and save news message"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save to XML file
+        filename = os.path.join(self.output_dir, f"news_{security}_{timestamp}.xml")
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(msg.toString())
+        
+        # Print to console
+        print(f"\n=== News Update for {security} ===")
+        print(f"Time: {timestamp}")
+        
+        if msg.hasElement("NEWS_HEADLINES"):
+            headlines = msg.getElement("NEWS_HEADLINES")
+            print(f"Headline: {headlines.getValueAsString()}")
+            
+        if msg.hasElement("NEWS_STORY"):
+            story = msg.getElement("NEWS_STORY")
+            print(f"Story: {story.getValueAsString()}")
+        
+        print("========================")
+
+    def _processMarketDataMessage(self, msg, security):
+        """Process and save market data message"""
+        if msg.hasElement("LAST_PRICE"):
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            print(f"\n=== Market Data for {security} ===")
+            print(f"Time: {timestamp}")
+            print(f"Last Price: {msg.getElementAsFloat('LAST_PRICE')}")
+            
+            if msg.hasElement("VOLUME"):
+                print(f"Volume: {msg.getElementAsFloat('VOLUME')}")
+            if msg.hasElement("BID"):
+                print(f"Bid: {msg.getElementAsFloat('BID')}")
+            if msg.hasElement("ASK"):
+                print(f"Ask: {msg.getElementAsFloat('ASK')}")
+            
+            print("========================")
 
     def _handleStatusEvent(self, event):
         """Handle subscription status"""
@@ -128,8 +145,8 @@ def main():
     feed.subscribe()
     
     try:
-        print("\nSubscribed to Market Moving News. Press Ctrl+C to exit.")
-        print("Monitoring both Bloomberg and Miscellaneous market-moving news...\n")
+        print("\nSubscribed to market data and news. Press Ctrl+C to exit.")
+        print("Monitoring AAPL, MSFT, and GOOGL for price updates and news...\n")
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
