@@ -79,9 +79,6 @@ class BloombergBasicFeed:
                 "data": {}
             }
             
-            # Debug print to see what fields are available
-            print(f"Available fields in message: {[field.name() for field in msg.elements()]}")
-            
             for field in ["LAST_PRICE", "BID", "ASK", "VOLUME"]:
                 if msg.hasElement(field):
                     element = msg.getElement(field)
@@ -89,8 +86,6 @@ class BloombergBasicFeed:
                         market_data["data"][field.lower()] = element.getValueAsInteger()
                     else:
                         market_data["data"][field.lower()] = element.getValueAsFloat()
-                else:
-                    print(f"Field {field} not found in message")
             
             filename = os.path.join(self.output_dir, f"market_data_AAPL_{market_data['timestamp']}.json")
             with open(filename, "w", encoding="utf-8") as f:
@@ -107,24 +102,27 @@ class BloombergBasicFeed:
 
     def _handleNewsData(self, msg):
         """Handle news updates"""
-        if msg.hasElement("NEWS_HEADLINES"):
-            news_data = {
-                "security": "AAPL",
-                "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
-                "type": "news",
-                "data": {
-                    "headline": msg.getElement("NEWS_HEADLINES").getValueAsString()
+        try:
+            if msg.hasElement("NEWS_HEADLINES"):
+                news_data = {
+                    "security": "AAPL",
+                    "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
+                    "type": "news",
+                    "data": {
+                        "headline": msg.getElement("NEWS_HEADLINES").getValueAsString()
+                    }
                 }
-            }
-            
-            filename = os.path.join(self.output_dir, f"news_AAPL_{news_data['timestamp']}.json")
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(news_data, f, indent=2, ensure_ascii=False)
-            
-            print(f"\nNews Update for AAPL:")
-            print(f"Time: {news_data['timestamp']}")
-            print(f"Headline: {news_data['data']['headline']}")
-            print("========================")
+                
+                filename = os.path.join(self.output_dir, f"news_AAPL_{news_data['timestamp']}.json")
+                with open(filename, "w", encoding="utf-8") as f:
+                    json.dump(news_data, f, indent=2, ensure_ascii=False)
+                
+                print(f"\nNews Update for AAPL:")
+                print(f"Time: {news_data['timestamp']}")
+                print(f"Headline: {news_data['data']['headline']}")
+                print("========================")
+        except blpapi.Exception as e:
+            print(f"Error processing news: {e}")
 
     def _handleStatusEvent(self, event):
         """Handle subscription status"""
