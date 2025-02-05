@@ -38,7 +38,7 @@ class BloombergTwitterFeed:
         # Subscribe to Twitter feed with EID 70028
         correlationId = blpapi.CorrelationId("twitter_feed")
         subscriptions.add(
-            topic="news/eid/70028?format=json",
+            topic="//blp/mktnews-content/news/eid/70028?format=json",
             correlationId=correlationId
         )
 
