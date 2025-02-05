@@ -60,7 +60,7 @@ Additionally, a `stocktwits_scraper.log` file is created in the root directory f
 
 The script tracks the following stocks:
 - MSFT, AAPL, CRM, CRWD, GOOGL
-- CYBR, NVDA, LMT, SHLD, WWD
+- CYBR, NVDA, LMT, SHLD, WWD (SHLD breaks, but you'll see error handling)
 - LYB, HON, HTHIY, WM, V
 - FISI, JPM, MA, AXP, EW
 - XLV, NVO, WMT, COKE, DIS
