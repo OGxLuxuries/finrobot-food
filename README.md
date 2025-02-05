@@ -18,6 +18,8 @@ Resources gathered on this API. Only successful run was with a PC with Bloomberg
 
 - https://developer.bloomberg.com/portal/products?interfaces=bloomberg_api_blpapi
 
+- (https://developer.bloomberg.com/portal/products/edf?chapterId=767&entityType=document)[curated twitter feed]
+
 ## Demo | Twitter Feed and XML to JSON Converter
 
 ### Overview
