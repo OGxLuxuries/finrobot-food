@@ -31,7 +31,7 @@ This project consists of two scripts that work together to collect and process B
 ## Dependencies
 Ensure you have the required dependencies installed before running the scripts:
 ```sh
-pip install ‑‑index-url=https://blpapi.bloomberg.com/repository/releases/python/simple blpapi
+python -m pip install --index-url=https://blpapi.bloomberg.com/repository/releases/python/simple blpapi
 pip install blpapi xmltodict
 ```
 
