@@ -62,52 +62,58 @@ class BloombergBasicFeed:
     def _handleDataEvent(self, event):
         """Handle market data and news updates"""
         for msg in event:
-            security = msg.correlationId().value()
-            
-            if security == "AAPL_MKT":
+            try:
+                if msg.hasElement("NEWS_HEADLINES"):
+                    self._handleNewsData(msg)
                 self._handleMarketData(msg)
-            elif security == "AAPL_NEWS":
-                self._handleNewsData(msg)
+            except Exception as e:
+                print(f"Error processing event: {e}")
 
     def _handleMarketData(self, msg):
         """Handle market data updates"""
-        market_data = {
-            "security": "AAPL",
-            "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
-            "type": "market_data",
-            "data": {}
-        }
-        
-        if msg.hasElement("LAST_PRICE"):
-            market_data["data"]["last_price"] = msg.getElementAsFloat("LAST_PRICE")
-        if msg.hasElement("BID"):
-            market_data["data"]["bid"] = msg.getElementAsFloat("BID")
-        if msg.hasElement("ASK"):
-            market_data["data"]["ask"] = msg.getElementAsFloat("ASK")
-        if msg.hasElement("VOLUME"):
-            market_data["data"]["volume"] = msg.getElementAsInteger("VOLUME")
-        
-        filename = os.path.join(self.output_dir, f"market_data_AAPL_{market_data['timestamp']}.json")
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(market_data, f, indent=2, ensure_ascii=False)
-        
-        print(f"\nMarket Data Update for AAPL:")
-        print(f"Time: {market_data['timestamp']}")
-        for key, value in market_data["data"].items():
-            print(f"{key.replace('_', ' ').title()}: {value}")
-        print("========================")
+        try:
+            market_data = {
+                "security": "AAPL",
+                "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
+                "type": "market_data",
+                "data": {}
+            }
+            
+            # Debug print to see what fields are available
+            print(f"Available fields in message: {[field.name() for field in msg.elements()]}")
+            
+            for field in ["LAST_PRICE", "BID", "ASK", "VOLUME"]:
+                if msg.hasElement(field):
+                    element = msg.getElement(field)
+                    if field == "VOLUME":
+                        market_data["data"][field.lower()] = element.getValueAsInteger()
+                    else:
+                        market_data["data"][field.lower()] = element.getValueAsFloat()
+                else:
+                    print(f"Field {field} not found in message")
+            
+            filename = os.path.join(self.output_dir, f"market_data_AAPL_{market_data['timestamp']}.json")
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(market_data, f, indent=2, ensure_ascii=False)
+            
+            if market_data["data"]:  # Only print if we have data
+                print(f"\nMarket Data Update for AAPL:")
+                print(f"Time: {market_data['timestamp']}")
+                for key, value in market_data["data"].items():
+                    print(f"{key.replace('_', ' ').title()}: {value}")
+                print("========================")
+        except blpapi.Exception as e:
+            print(f"Error processing market data: {e}")
 
     def _handleNewsData(self, msg):
         """Handle news updates"""
-        if msg.hasElement("HEADLINE"):
+        if msg.hasElement("NEWS_HEADLINES"):
             news_data = {
                 "security": "AAPL",
                 "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
                 "type": "news",
                 "data": {
-                    "headline": msg.getElementAsString("HEADLINE"),
-                    "story": msg.getElementAsString("STORY_TEXT") if msg.hasElement("STORY_TEXT") else "",
-                    "time": msg.getElementAsString("TIME_STAMP") if msg.hasElement("TIME_STAMP") else ""
+                    "headline": msg.getElement("NEWS_HEADLINES").getValueAsString()
                 }
             }
             
