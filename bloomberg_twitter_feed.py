@@ -115,20 +115,17 @@ class BloombergTwitterFeed:
 def main():
     feed = BloombergTwitterFeed()
     
-    if not feed.start():
-        return
-    
-    feed.subscribe()
-    
     try:
-        print("\nSubscribed to social media and sentiment data. Press Ctrl+C to exit.")
-        print("Monitoring AAPL, MSFT, and GOOGL...\n")
+        if not feed.start():
+            return
+        feed.subscribe()
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("\nCtrl+C pressed. Stopping...")
     finally:
         feed.session.stop()
+        feed.session.destroy()  # Add session destruction
 
 if __name__ == "__main__":
     main() 
